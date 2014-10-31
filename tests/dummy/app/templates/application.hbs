@@ -1,3 +1,22 @@
-<h2 id='title'>Welcome to Ember.js</h2>
+<h2 id='title'>Balanced Store Customers</h2>
+
+<form {{action "submit" apiKey}}>
+  {{input value=apiKey}}
+  <button type="submit">Submit</button>
+</form>
+<ul>
+  {{#each customer in customers}}
+    <li>
+      <h4>Customer {{customer.id}}</h4>
+      <dl>
+        <dt>Name</dt>
+        <dd>{{customer.name}}</dd>
+
+        <dt>Created at</dt>
+        <dd>{{customer.created_at}}</dd>
+      </dl>
+    </li>
+  {{/each}}
+</ul>
 
 {{outlet}}
