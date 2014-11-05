@@ -1,32 +1,65 @@
-import DS from "ember-data";
+import Ember from "ember";
 import { test, moduleFor } from 'ember-qunit';
-import { setupStore } from "../../helpers/ember_configuration";
+import DS from "ember-data";
 
-module("serialize - BalancedApiSerializer");
+moduleFor("balanced-addon-models@serializer:balanced-api", "serializer - BalancedApiSerializer", {
+  setup: function() {
+    DS._routes = {};
+  }
+});
 
-test("#normalize() can handle null links", function() {
-  var Manufacturer = DS.Model.extend({});
-  var CarModel = DS.Model.extend({
-    name: DS.attr(),
-    manufacturer: DS.belongsTo("manufacturer")
+test("#extractLinks", function() {
+  var subject = this.subject();
+  var result = subject.extractLinks({
+    "customer.debits": "/customers/{customer.id}/debits",
+    "debits": "/debits"
   });
 
-  var env = setupStore({
-    manufacturer: Manufacturer,
-    carModel: CarModel
+  deepEqual(DS._routes, {
+    "customer.debits": "/customers/{customer.id}/debits",
+    "debits": "/debits"
   });
 
-  var subject = env.container.lookup("serializer:balanced-api");
-  console.log(subject, subject.store);
-  var json = {
-    name: "Durango",
-    links: {
-      manufacturer: null,
+  deepEqual(result, [{
+    "customer.debits": "/customers/{customer.id}/debits"
+  }, {
+    "debits": "/debits"
+  }]);
+});
+
+test("#normalize", function() {
+  DS._routes = {
+    "authors.books": "/authors/{author.id}/books"
+  };
+  var Author = {
+    eachAttribute: function() {},
+    eachTransformedAttribute: function() {},
+    eachRelationship: function(callback, self) {
+      callback.call(self, "books", {
+        kind: "hasMany"
+      });
     }
   };
-  console.log(env.container);
 
-  var result = subject.normalize(env.container.lookupFactory("model:carModel"), json, "car_models");
-  deepEqual(result.name, "Durango");
-  deepEqual(result.manufacturer, null);
+  var subject = this.subject();
+  var executeTest = function(data, expectation) {
+    var result = subject.normalize(Author, data, "authors");
+    deepEqual(result, expectation);
+  }.bind(this);
+
+  executeTest({
+    id: "CU123123123",
+    links: {},
+    address: {
+      city: "Metroville"
+    }
+  }, {
+    id: "CU123123123",
+    address: {
+      city: "Metroville"
+    },
+    links: {
+      "books": "/authors/CU123123123/books"
+    }
+  });
 });

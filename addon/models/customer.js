@@ -1,12 +1,14 @@
 import DS from "ember-data";
 import Ember from "ember";
 
-var has = function(model, attribute) {
-  return !Ember.isBlank(model.get(attribute));
+var has = function(value) {
+  return !Ember.isBlank(value);
 };
 
 var Customer = DS.Model.extend({
-//  destination: DS.belongsTo("funding-instrument"),
+  bankAccounts: DS.hasMany("bank-account", {
+    async: true
+  }),
 
   name: DS.attr(),
 
@@ -25,7 +27,7 @@ var Customer = DS.Model.extend({
   updated_at: DS.attr("date"),
 
   isBusiness: Ember.computed("ein", "business_name", function() {
-    return has(this, "ein") || has(this, "business_name");
+    return has(this.get("ein")) || has(this.get("business_name"));
   }),
 });
 
