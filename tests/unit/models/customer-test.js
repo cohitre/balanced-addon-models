@@ -2,7 +2,7 @@ import Ember from "ember";
 import { test, moduleForModel } from 'ember-qunit';
 
 moduleForModel("customer", "model - Customer", {
-  needs: ['model:bank-account']
+  needs: ['model:bank-account', "model:card"]
 });
 
 var checkAttribute = function(test, attributeName, value, attributes) {

@@ -1,11 +1,11 @@
 import Ember from "ember";
 import { test, moduleForModel } from 'ember-qunit';
 
-moduleForModel("bank-account", "model - BankAccount", {
-  needs: ['model:customer', "model:card"]
+moduleForModel("card", "model - Card", {
+  needs: ['model:customer', "model:bank-account"]
 });
 
 test("#expectedCreditDaysOffset", function() {
   var account = this.subject();
-  equal(account.get("expectedCreditDaysOffset"), 1);
+  equal(account.get("expectedCreditDaysOffset"), 2);
 });

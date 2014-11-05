@@ -6,6 +6,9 @@ var has = function(value) {
 };
 
 var Customer = DS.Model.extend({
+  cards: DS.hasMany("cards", {
+    async: true
+  }),
   bankAccounts: DS.hasMany("bank-account", {
     async: true
   }),
