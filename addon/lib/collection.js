@@ -1,32 +1,28 @@
 import Ember from "ember";
 
 export default Ember.ArrayProxy.extend({
-  page: 0,
+  isNextPage: Ember.computed("meta", function() {
+    return !Ember.isBlank(this.get("meta.next"));
+  }),
+
   reload: function() {
-    var modelType = this.get("modelType");
-    var attributes = this.get("attributes");
-
-    var callback = function(results) {
-      this.pushObjects(results.get("content"));
-      return this;
-    }.bind(this);
-
+    var attr = this.get("attributes");
     this.set("content", Ember.A());
-    return this.store.find(modelType, attributes).then(callback);
+    return this.store.find(this.modelType, attr).then(loadResults.bind(this));
+  },
+
+  pushResults: function(results, meta) {
+    return this;
   },
 
   loadNext: function() {
-    this.incrementProperty("page");
-    var modelType = this.get("modelType");
-    var attributes = Ember.merge({
-      offset: this.get("page") * this.get("attributes.limit")
-    }, this.get("attributes"));
-
-    var callback = function(results) {
-      this.pushObjects(results.get("content"));
-      return this;
-    }.bind(this);
-
-    return this.store.find(modelType, attributes).then(callback);
+    var next = this.get("meta.next");
+    return this.store.findUri(this.modelType, next).then(loadResults.bind(this));
   },
 });
+
+function loadResults(results) {
+  this.set("meta", results.get("balanced-meta"));
+  this.pushObjects(results.get("content"));
+  return this;
+};

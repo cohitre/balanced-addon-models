@@ -1,6 +1,9 @@
 <h2>Marketplace: {{name}}</h2>
 <a {{action "reload" customers}} href="#">reload</a>
-<a {{action "loadNext" customers}} href="#">load next</a>
+|
+{{#if customers.isNextPage}}
+  <a {{action "loadNext" customers}} href="#">load next</a>
+{{/if}}
 
 <table>
   <thead>
