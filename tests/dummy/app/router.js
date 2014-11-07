@@ -6,6 +6,9 @@ var Router = Ember.Router.extend({
 });
 
 Router.map(function() {
+  this.resource('marketplace', function() {
+    this.route("customers");
+  });
 });
 
 export default Router;

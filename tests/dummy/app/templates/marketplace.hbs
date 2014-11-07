@@ -1,0 +1,26 @@
+<h2>Marketplace: {{name}}</h2>
+<a {{action "reload" customers}} href="#">reload</a>
+<a {{action "loadNext" customers}} href="#">load next</a>
+
+<table>
+  <thead>
+    <tr>
+      <td>Date</td>
+      <td>Customer</td>
+      <td>Business</td>
+      <td>Bank Accounts count</td>
+      <td>Cards count</td>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each customer in customers}}
+      <tr>
+        <td>{{customer.created_at}}</td>
+        <td>{{customer.name}}</td>
+        <td>none</td>
+        <td>{{customer.bankAccounts.length}}</td>
+        <td>{{customer.cards.length}}</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
