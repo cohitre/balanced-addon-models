@@ -1,5 +1,4 @@
 import Ember from "ember";
-import DS from "ember-data";
 import JsonApiSerializer from 'ember-json-api/json_api_serializer';
 import JsonApiLinkCompiler from "../lib/json-api-link-compiler";
 
@@ -34,7 +33,9 @@ export default JsonApiSerializer.extend({
   },
 
   normalizePayload: function(payload) {
-    var links, hash = {};
+    var links, hash = {}, normalizeItemLoop = function(model) {
+        return this.normalizeItem(modelKey, model, links);
+    };
 
     if (payload.meta) {
       this.extractMeta(payload.meta);
@@ -52,10 +53,7 @@ export default JsonApiSerializer.extend({
     }
 
     for (var modelKey in payload) {
-      hash[modelKey] = Ember.A(payload[modelKey])
-        .map(function(model) {
-          return this.normalizeItem(modelKey, model, links);
-        }.bind(this));
+      hash[modelKey] = Ember.A(payload[modelKey]).map(normalizeItemLoop.bind(this));
     }
 
     return hash;
