@@ -1,6 +1,4 @@
-import Ember from "ember";
 import DS from "ember-data";
-var get = Ember.get;
 
 export default DS.Store.extend({
   findUri: function(typeName, uri) {
@@ -12,7 +10,6 @@ export default DS.Store.extend({
 });
 
 function serializerForAdapter(adapter, type) {
-  var serializer = adapter.serializer;
   var defaultSerializer = adapter.defaultSerializer;
   var container = adapter.container;
   return container.lookup('serializer:'+type.typeKey) ||
@@ -24,9 +21,7 @@ function serializerForAdapter(adapter, type) {
 function _findUri(adapter, store, type, uri, recordArray) {
   var serializer = serializerForAdapter(adapter, type);
   return adapter.findUri(store, type, uri, recordArray).then(function(adapterPayload) {
-    var payload = adapter.container.lookup("serializer:application")
-      .extract(store, type, adapterPayload, null, 'findQuery');
-    var records = store.pushMany(type, payload);
+    var payload = serializer.extract(store, type, adapterPayload, null, 'findQuery');
     recordArray.load(payload);
     return recordArray;
   }, null);
