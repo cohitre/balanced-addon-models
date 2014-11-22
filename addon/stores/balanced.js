@@ -1,28 +1,66 @@
-import DS from "ember-data";
+import Ember from "ember";
 
-export default DS.Store.extend({
-  findUri: function(typeName, uri) {
-    var type = this.modelFor(typeName);
-    var adapter = this.adapterFor(type);
-    var array = this.recordArrayManager.createAdapterPopulatedRecordArray(type, uri);
-    return _findUri(adapter, this, type, uri, array);
+var Store = Ember.Object.extend({
+  modelFor: function(typeName) {
+    if (typeName === "hold") {
+      typeName = "card_hold";
+    }
+
+    var modelPath = "balanced-addon-models@model:" + typeName;
+    var model = this.container.lookupFactory(modelPath);
+    Ember.assert("Cannot find model class for " + modelPath, model);
+    return model;
+  },
+
+  adapterFor: function(typeName) {
+    var modelClass = this.modelFor(typeName);
+    return this.container.lookupFactory(modelClass.adapterName).create({
+      api_key: this.get("apiKey")
+    });
+  },
+
+  collectionFor: function(typeName) {
+    var CollectionClass = this.container.lookupFactory("balanced-addon-models@collection:" + typeName);
+    if (Ember.isBlank(CollectionClass)) {
+      CollectionClass = this.collectionFor("base");
+    }
+    return CollectionClass;
+  },
+
+  processResponse: function(response) {
+    return Ember.A(response.items).map(function(item) {
+      return this.build(item._type, item);
+    }.bind(this));
+  },
+
+  build: function(typeName, attributes) {
+    var model = this.modelFor(typeName).create(attributes || {});
+    model.setProperties({
+      container: this.container,
+      store: this
+    });
+    return model;
+  },
+
+  fetchCollection: function(typeName, uri) {
+    var collection = this.collectionFor(typeName).create({
+      content: [],
+      modelType: typeName,
+      container: this.container,
+      store: this
+    });
+    return collection.loadUri(uri);
+  },
+
+  fetchItem: function(typeName, uri) {
+    return this.fetchCollection(typeName, uri).then(function(collection) {
+      return collection.objectAt(0);
+    });
+  },
+
+  fetch: function(type, uri) {
+    return this.adapterFor(type).fetch(uri);
   },
 });
 
-function serializerForAdapter(adapter, type) {
-  var defaultSerializer = adapter.defaultSerializer;
-  var container = adapter.container;
-  return container.lookup('serializer:'+type.typeKey) ||
-    container.lookup('serializer:application') ||
-    container.lookup('serializer:' + defaultSerializer) ||
-    container.lookup('serializer:-default');
-}
-
-function _findUri(adapter, store, type, uri, recordArray) {
-  var serializer = serializerForAdapter(adapter, type);
-  return adapter.findUri(store, type, uri, recordArray).then(function(adapterPayload) {
-    var payload = serializer.extract(store, type, adapterPayload, null, 'findQuery');
-    recordArray.load(payload);
-    return recordArray;
-  }, null);
-}
+export default Store;

@@ -1,32 +1,28 @@
 import Ember from "ember";
-import JsonApiAdapter from 'ember-json-api/json_api_adapter';
+import AjaxAdapter from "./ajax";
 
-export default JsonApiAdapter.extend({
-  host: 'https://api.balancedpayments.com',
+var BalancedApiAdapter = AjaxAdapter.extend({
+  serializerName: "balanced-addon-models@serializer:rev1",
 
-  headers: Ember.computed(function() {
+  host: "https://api.balancedpayments.com",
+  accepts: 'application/vnd.balancedpayments+json; version=1.1',
+  contentType: 'application/json; charset=UTF-8',
+
+  headers: function() {
     return {
-      Authorization: this.get("encodedAuthorization")
+      Authorization: this.get("encodedApiKey"),
     };
-  }).property("encodedAuthorization"),
+  }.property("encodedApiKey"),
 
-  encodedAuthorization: Ember.computed("apiKey", function() {
-    return 'Basic ' + window.btoa(this.get("apiKey") + ':');
-  }),
-
-  findUri: function(store, typeName, uri, recordArray) {
-    return this.ajax(this.urlPrefix(uri), "GET").then(function(response) {
-      recordArray.set("balanced-meta", response.meta);
-      return response;
-    });
-  },
-
-  findQuery: function(store, typeName, query, recordArray) {
-    // There's no obvious way to set the meta since we delete it inside the serializer
-    // ideally we could just set it to be "meta", but meta is used for store.metaData
-    return this._super(store, typeName, query).then(function(response) {
-      recordArray.set("balanced-meta", response.meta);
-      return response;
-    });
-  },
+  encodedApiKey: function() {
+    var apiKey = this.get("api_key");
+    if (Ember.isBlank(apiKey)) {
+      return null;
+    }
+    else {
+      return 'Basic ' + window.btoa(apiKey + ':');
+    }
+  }.property("api_key"),
 });
+
+export default BalancedApiAdapter;

@@ -1,18 +1,41 @@
 <h2>Marketplace: {{name}}</h2>
+
+<h3>Transactions: {{transactions.length}}/{{transactions.totalCount}}</h3>
+<a {{action "reload" transactions}} href="#">reload</a>
+|
+{{#if transactions.isNextPage}}
+  <a {{action "loadNext" transactions}} href="#">load next</a>
+{{/if}}
+
+<table>
+  <thead>
+    <tr>
+      <td>Date</td>
+      <td>Amount</td>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each transaction in transactions}}
+      <tr>
+        <td>{{transaction.created_at}}</td>
+        <td>{{transaction.amount}}</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+
+<h3>Customers: {{customers.length}}/{{customers.totalCount}}</h3>
 <a {{action "reload" customers}} href="#">reload</a>
 |
 {{#if customers.isNextPage}}
   <a {{action "loadNext" customers}} href="#">load next</a>
 {{/if}}
 
-<h3>Customers: {{customers.length}}/{{customers.totalCount}}</h3>
-
 <table>
   <thead>
     <tr>
       <td>Date</td>
       <td>Customer</td>
-      <td>Business</td>
       <td>Bank Accounts count</td>
       <td>Cards count</td>
     </tr>
@@ -22,7 +45,6 @@
       <tr>
         <td>{{customer.created_at}}</td>
         <td>{{customer.name}}</td>
-        <td>none</td>
         <td>{{customer.bankAccounts.length}}</td>
         <td>{{customer.cards.length}}</td>
       </tr>

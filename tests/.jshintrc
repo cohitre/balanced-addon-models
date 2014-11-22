@@ -1,10 +1,12 @@
 {
   "predef": [
+    "sinon",
     "document",
     "window",
     "location",
     "setTimeout",
     "$",
+    "jQuery",
     "-Promise",
     "QUnit",
     "define",

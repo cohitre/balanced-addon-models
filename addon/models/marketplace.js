@@ -1,34 +1,29 @@
-import DS from "ember-data";
-import Collection from "../lib/collection";
+import Model from "./core/model";
+import BK from "./core/method-generators";
 
-var Marketplace = DS.Model.extend({
-  customers: DS.hasMany("customer", {
-    async: true
-  }),
+var Marketplace = Model.extend({
+  fetchOwnerCustomer: BK.fetchSingle("customer", "owner_customer_uri"),
 
-  getCustomersCollection: function(attributes) {
-    var collection = Collection.create({
-      modelType: "customer",
-      store: this.store,
-      attributes: attributes
-    });
-    collection.reload();
-    return collection;
-  },
+  fetchCustomers: BK.fetchCollection("customer"),
 
-  name: DS.attr("string"),
-  created_at: DS.attr("date"),
-  updated_at: DS.attr("date"),
+  fetchCards: BK.fetchCollection("card"),
+  fetchBankAccounts: BK.fetchCollection("bank_account"),
 
-  in_escrow: DS.attr("number"),
-  unsettled_fees: DS.attr("number"),
-  domain_url: DS.attr("string"),
+  fetchTransactions: BK.fetchCollection("transaction"),
+  fetchCardHolds: BK.fetchCollection("card_hold"),
+  fetchCredits: BK.fetchCollection("credit"),
+  fetchDebits: BK.fetchCollection("debit"),
+  fetchRefunds: BK.fetchCollection("refund"),
+  fetchReversal: BK.fetchCollection("reversal"),
 
-  support_email_address: DS.attr("string"),
-  support_phone_number: DS.attr("string"),
+  fetchCallbacks: BK.fetchCollection("callback"),
+  fetchDisputes: BK.fetchCollection("dispute"),
+  fetchEvents: BK.fetchCollection("event"),
+  fetchOrders: BK.fetchCollection("order"),
+});
 
-  production: DS.attr("boolean"),
-  meta: DS.attr()
+Marketplace.reopenClass({
+  adapterName: "balanced-addon-models@adapter:balanced-api"
 });
 
 export default Marketplace;

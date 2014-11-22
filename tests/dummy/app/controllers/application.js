@@ -3,7 +3,9 @@ import Ember from "ember";
 export default Ember.Controller.extend({
   actions: {
     submit: function(apiKey) {
-      this.get("container").lookup("adapter:application").set("apiKey", apiKey);
+      var store = this.container.lookup("store:balanced");
+      this.set("store", store);
+      store.set("apiKey", apiKey);
       this.transitionToRoute("marketplace");
     },
   }
