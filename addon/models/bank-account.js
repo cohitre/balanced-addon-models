@@ -1,3 +1,5 @@
 import FundingInstrument from "./funding-instrument";
 
-export default FundingInstrument.extend({});
+export default FundingInstrument.extend({
+  isBankAccount: true
+});

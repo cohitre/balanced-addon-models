@@ -1,10 +1,13 @@
 import Ember from "ember";
 
 export default Ember.ArrayProxy.extend({
+  isLoaded: false,
+  isLoadingNextPage: false,
+
   nextUri: Ember.computed.reads("meta.next"),
   totalCount: Ember.computed.reads("meta.total"),
 
-  isNextPage: Ember.computed("meta", function() {
+  hasNextPage: Ember.computed("meta", function() {
     return !Ember.isBlank(this.get("nextUri"));
   }),
 

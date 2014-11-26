@@ -1,14 +1,26 @@
 import Ember from "ember";
+import QueryStringCreator from "balanced-addon-models/utils/query-string-creator";
 
 var Store = Ember.Object.extend({
-  modelFor: function(typeName) {
-    if (typeName === "hold") {
-      typeName = "card_hold";
-    }
+  modelMaps: {
+    "hold": "balanced-addon-models@model:card_hold"
+  },
 
-    var modelPath = "balanced-addon-models@model:" + typeName;
+  modelPathFor: function(typeName) {
+    var mapped = this.modelMaps[typeName];
+
+    if (Ember.isBlank(mapped)) {
+      return "balanced-addon-models@model:" + typeName;
+    }
+    else {
+      return mapped;
+    }
+  },
+
+  modelFor: function(typeName) {
+    var modelPath = this.modelPathFor(typeName);
     var model = this.container.lookupFactory(modelPath);
-    Ember.assert("Cannot find model class for " + modelPath, model);
+    Ember.assert("Cannot find model " + modelPath + " for " + typeName, model);
     return model;
   },
 
@@ -42,18 +54,20 @@ var Store = Ember.Object.extend({
     return model;
   },
 
-  fetchCollection: function(typeName, uri) {
+  fetchCollection: function(typeName, uri, attributes) {
     var collection = this.collectionFor(typeName).create({
       content: [],
       modelType: typeName,
       container: this.container,
       store: this
     });
+
+    uri = QueryStringCreator.uri(uri, attributes);
     return collection.loadUri(uri);
   },
 
-  fetchItem: function(typeName, uri) {
-    return this.fetchCollection(typeName, uri).then(function(collection) {
+  fetchItem: function(typeName, uri, attributes) {
+    return this.fetchCollection(typeName, uri, attributes).then(function(collection) {
       return collection.objectAt(0);
     });
   },
