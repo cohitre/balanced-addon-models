@@ -10,12 +10,21 @@ test("#extractCollection", function() {
     },
     "marketplaces": [
       {
-        "id": "TEST-MP6OlNbMkUbLTMT6pM4H3eLj",
+        "id": "TEST-MP11111",
+        "name": "My test mp",
+        "links": {
+          "owner_customer": "CU11111"
+        },
+        "href": "/marketplaces/TEST-MP11111",
+        "meta": {},
+      },
+      {
+        "id": "TEST-MP22222",
         "name": "carlos test mp",
         "links": {
-          "owner_customer": "CU6Onsf5OkhscYPT3qS5PwAl"
+          "owner_customer": "CU22222"
         },
-        "href": "/marketplaces/TEST-MP6OlNbMkUbLTMT6pM4H3eLj",
+        "href": "/marketplaces/TEST-MP22222",
         "meta": {},
       }
     ],
@@ -32,15 +41,27 @@ test("#extractCollection", function() {
     items: [{
       "_type": "marketplace",
       "debits_uri": "/debits",
-      "href": "/marketplaces/TEST-MP6OlNbMkUbLTMT6pM4H3eLj",
-      "id": "TEST-MP6OlNbMkUbLTMT6pM4H3eLj",
-      "links": {
-        "owner_customer": "CU6Onsf5OkhscYPT3qS5PwAl"
-      },
+      "id": "TEST-MP11111",
+      "href": "/marketplaces/TEST-MP11111",
+      "name": "My test mp",
+      "owner_customer_uri": "/customers/CU11111",
+      "uri": "/marketplaces/TEST-MP11111",
       "meta": {},
+      "links": {
+        "owner_customer": "CU11111"
+      },
+    }, {
+      "_type": "marketplace",
+      "debits_uri": "/debits",
+      "href": "/marketplaces/TEST-MP22222",
+      "id": "TEST-MP22222",
       "name": "carlos test mp",
-      "owner_customer_uri": "/customers/CU6Onsf5OkhscYPT3qS5PwAl",
-      "uri": "/marketplaces/TEST-MP6OlNbMkUbLTMT6pM4H3eLj"
+      "owner_customer_uri": "/customers/CU22222",
+      "uri": "/marketplaces/TEST-MP22222",
+      "meta": {},
+      "links": {
+        "owner_customer": "CU22222"
+      },
     }],
     linked: undefined,
     meta: {
@@ -49,27 +70,36 @@ test("#extractCollection", function() {
   });
 });
 
-test("#extractSingle", function() {
+test("populateObject", function() {
   var subject = this.subject();
-  var links = {
-    "debits": "/debits",
-    "marketplaces.transactions": "/marketplaces/{marketplaces.id}/transactions",
-    "marketplaces.owner_customer": "/marketplaces/{marketplaces.id}/customers/{marketplaces.owner_customer}"
-  };
-  var marketplace = {
-    id: "MPxxxxx",
-    links: {
-      owner_customer: "CUxxxxx"
-    }
-  };
+  var object = Ember.Object.create();
 
-  var result = subject.compileModelLinks("marketplaces", marketplace, links);
-  deepEqual(result, {
-    owner_customer: {
-      href: "/marketplaces/MPxxxxx/customers/CUxxxxx"
-    },
-    transactions: {
-      href: "/marketplaces/MPxxxxx/transactions"
+  var populatedObject = subject.populateObject(object, "marketplace", {
+    "meta": {},
+    "marketplaces": [
+      {
+        "id": "TEST-MP11111",
+        "name": "My test mp",
+        "links": {
+          "owner_customer": "CU11111"
+        },
+        "href": "/marketplaces/TEST-MP11111",
+        "meta": {},
+      },
+      {
+        "id": "TEST-MP22222",
+        "name": "carlos test mp",
+        "links": {
+          "owner_customer": "CU22222"
+        },
+        "href": "/marketplaces/TEST-MP22222",
+        "meta": {},
+      }
+    ],
+    "links": {
+      "marketplaces.debits": "/debits",
+      "marketplaces.owner_customer": "/customers/{marketplaces.owner_customer}",
     }
   });
+  equal(object, populatedObject, "Object returned is original instance");
 });

@@ -4,6 +4,12 @@ import BK from "./core/method-generators";
 
 var Transaction = Model.extend({
   fetchEvents: BK.fetchCollection("event"),
+  fetchLogs: BK.fetchCollectionForUri("log", "/logs", {
+    method: ["post", "put", "delete"],
+    resource_id: function() {
+      return this.get("id");
+    },
+  }),
 
   isUnlinked: Ember.computed.not("links.order"),
 

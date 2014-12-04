@@ -3,11 +3,10 @@ import Ember from "ember";
 var Rev1Serializer = Ember.Object.extend({
 	extractCollection: function(rootJson) {
 		var collection = Ember.A();
-		var self = this;
 
 		var populateFunc = function(val, typeName) {
-			collection.push(self._populateObject(val, typeName, rootJson));
-		};
+			collection.push(this.populateObject(val, typeName, rootJson));
+		}.bind(this);
 
 		each(rootJson, function(values, typeName) {
       if (Ember.isArray(values)) {
@@ -24,15 +23,15 @@ var Rev1Serializer = Ember.Object.extend({
 		};
 	},
 
-	_populateObject: function(modelObj, objType, rootJson) {
+	populateObject: function(modelObj, objType, rootJson) {
 		var linksValues = {};
 		linksValues[objType + '.id'] = modelObj.id;
 		linksValues[objType + '.self'] = modelObj.id;
 
 		if (modelObj.links) {
-			for (var key in modelObj.links) {
-				linksValues[objType + '.' + key] = modelObj.links[key];
-			}
+      each(modelObj.links, function(value, key) {
+				linksValues[objType + '.' + key] = value;
+      });
 		}
 
 		var replaceHrefFunc = function(match, linkParam) {
@@ -52,13 +51,9 @@ var Rev1Serializer = Ember.Object.extend({
 
 		var templatedLinks = {};
 		var objPropertyName = objType;
-		for (var link in rootJson.links) {
+    each(rootJson.links, function(href, link) {
 			if (link.indexOf(objPropertyName + ".") === 0) {
 				var linkName = link.substring(objPropertyName.length + 1);
-
-				// Template all the links
-				var href = rootJson.links[link];
-
 				try {
 					var replacedHref = href.replace(/\{([\.\w]+)\}/g, replaceHrefFunc);
 					templatedLinks[linkName] = replacedHref;
@@ -66,11 +61,11 @@ var Rev1Serializer = Ember.Object.extend({
 					templatedLinks[linkName] = null;
 				}
 			}
-		}
+		});
 
-		for (link in templatedLinks) {
-			modelObj[link + "_uri"] = templatedLinks[link];
-		}
+    each(templatedLinks, function(value, link) {
+			modelObj[link + "_uri"] = value;
+    });
 
 		modelObj.uri = modelObj.href;
 		modelObj._type = objType.replace(/s$/, '');

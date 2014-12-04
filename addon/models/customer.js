@@ -10,6 +10,19 @@ var CUSTOMER_TYPES = {
 var Customer = Model.extend({
   fetchBankAccounts: BK.fetchCollection("bank_account"),
   fetchCards: BK.fetchCollection("card"),
+  fetchFundingInstruments: BK.fetchCollection("funding-instrument", "search_uri", {
+    type: ["card", "bank_account"]
+  }),
+
+  fetchDisputes: BK.fetchCollection("dispute"),
+  fetchTransactions: BK.fetchCollection("transaction"),
+
+  fetchLogs: BK.fetchCollection("log"),
+  logs_uri: "/logs",
+
+  search_uri: Ember.computed(function() {
+    return this.get("href") + "/search";
+  }).property("href"),
 
   bankAccounts: Ember.computed(function() {
     this.fetchBankAccounts().then(function(collection) {
@@ -50,10 +63,6 @@ var Customer = Model.extend({
   has_debitable_bank_account: function() {
     return this.get('bank_accounts').isAny('can_debit');
   }.property('bank_accounts.@each.can_debit'),
-
-  funding_instruments: Ember.computed.union('bank_accounts', 'cards'),
-  debitable_funding_instruments: Ember.computed.union('debitable_bank_accounts', 'cards'),
-  creditable_funding_instruments: Ember.computed.union('bank_accounts', 'creditable_cards'),
 
   type: function() {
     return (this.get('ein') || this.get('business_name')) ? CUSTOMER_TYPES.BUSINESS : CUSTOMER_TYPES.PERSON;
@@ -108,23 +117,6 @@ var Customer = Model.extend({
     }
     return name;
   }.property('is_business', 'business_name', 'name', 'email'),
-
-  address_string: function() {
-    var seperator = ', ';
-    var addressParts = [];
-    var city = this.get('address.city');
-    var cityLine = '';
-
-    addressParts.push(this.get('address.line1'));
-    addressParts.push(this.get('address.line2'));
-
-    cityLine = (city ? city + ', ' : '') + ' ' + (this.get('address.postal_code') || '');
-    addressParts.push($.trim(cityLine));
-    addressParts.push(this.get('address.country_code'));
-
-    addressParts = _.compact(addressParts);
-    return addressParts.join(seperator);
-  }.property('address.line1', 'address.line2', 'address.city', 'address.state', 'address.postal_code', 'address.country_code'),
 
   dob: function() {
     var month = this.get('dob_month');

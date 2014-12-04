@@ -2,7 +2,7 @@ import Ember from "ember";
 import { test, moduleFor } from 'ember-qunit';
 import MH from "../../helpers/model-helpers";
 
-moduleFor("balanced-addon-models@model:funding-instrument", "model - FundingInstrument");
+moduleFor("balanced-addon-models@model:card", "model - Card");
 
 test("#adapter", MH.shouldUseBalancedApiAdapter());
 test("#isBankAccount", function() {
@@ -10,5 +10,5 @@ test("#isBankAccount", function() {
 });
 
 test("#isCard", function() {
-  deepEqual(this.subject().get("isCard"), false);
+  deepEqual(this.subject().get("isCard"), true);
 });

@@ -1,5 +1,4 @@
 import Model from "./core/model";
-import BK from "./core/method-generators";
 
 var Order = Model.extend({
 });

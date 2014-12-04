@@ -1,3 +1,5 @@
 import Transaction from "./transaction";
 
-export default Transaction.extend({});
+var CardHold = Transaction.extend({});
+
+export default CardHold;

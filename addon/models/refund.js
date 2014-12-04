@@ -1,3 +1,5 @@
 import Transaction from "./transaction";
 
-export default Transaction.extend({});
+var Refund = Transaction.extend({});
+
+export default Refund;

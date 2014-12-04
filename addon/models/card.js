@@ -1,3 +1,7 @@
 import FundingInstrument from "./funding-instrument";
 
-export default FundingInstrument.extend({});
+var Card = FundingInstrument.extend({
+  isCard: true
+});
+
+export default Card;

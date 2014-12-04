@@ -25,7 +25,14 @@ var Store = Ember.Object.extend({
   },
 
   adapterFor: function(typeName) {
-    var modelClass = this.modelFor(typeName);
+    var modelClass = typeName;
+    if (Ember.typeOf(typeName) === "string") {
+      modelClass = this.modelFor(typeName);
+    }
+    else if (Ember.typeOf(typeName) === "class") {
+      modelClass = typeName;
+    }
+    Ember.assert("Couldn't get modelClass from " + typeName, modelClass);
     return this.container.lookupFactory(modelClass.adapterName).create({
       api_key: this.get("apiKey")
     });

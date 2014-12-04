@@ -1,3 +1,5 @@
 import Transaction from "./transaction";
 
-export default Transaction.extend({});
+var Reversal = Transaction.extend({});
+
+export default Reversal;

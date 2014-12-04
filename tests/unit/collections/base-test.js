@@ -20,14 +20,14 @@ test("#totalCount", function() {
   deepEqual(subject.get("totalCount"), 100);
 });
 
-test("#isNextPage", function() {
+test("#hasNextPage", function() {
   var subject = this.subject();
   subject.set("meta", {
     next: "/marketplaces"
   });
-  deepEqual(subject.get("isNextPage"), true);
+  deepEqual(subject.get("hasNextPage"), true);
   subject.set("meta", {});
-  deepEqual(subject.get("isNextPage"), false);
+  deepEqual(subject.get("hasNextPage"), false);
 });
 
 test("#ingestResponse", function() {

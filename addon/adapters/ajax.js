@@ -1,5 +1,6 @@
 import Ember from "ember";
 import BaseAdapter from "./base";
+var jQuery = window.jQuery;
 
 var AjaxAdapter = BaseAdapter.extend({
   _uri: function(path) {
@@ -18,7 +19,6 @@ var AjaxAdapter = BaseAdapter.extend({
   ajax: function(uri, method, settings) {
     var deferred = Ember.RSVP.defer();
     settings = Ember.merge({
-      accepts: this.get("accepts"),
       contentType: this.get("contentType"),
       dataType: "json",
       method: method,
