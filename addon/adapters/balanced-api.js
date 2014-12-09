@@ -5,7 +5,8 @@ var BalancedApiAdapter = AjaxAdapter.extend({
   serializerName: "balanced-addon-models@serializer:rev1",
 
   host: "https://api.balancedpayments.com",
-  accepts: 'application/vnd.balancedpayments+json; version=1.1',
+  // accepts: 'application/vnd.balancedpayments+json; version=1.1',
+  accepts: "application/vnd.api+json;revision=1.1",
   contentType: 'application/json; charset=UTF-8',
 
   headers: function() {

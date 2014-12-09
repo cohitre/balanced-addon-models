@@ -3,6 +3,16 @@ import { test, moduleFor } from 'ember-qunit';
 
 moduleFor("balanced-addon-models@store:balanced", "store - Balanced");
 
+test("#modelPathFor", function() {
+  var store = this.subject();
+  store.modelMaps.automobile = "model:automobile";
+
+  deepEqual(store.modelPathFor("hold"), "balanced-addon-models@model:card_hold");
+  deepEqual(store.modelPathFor("marketplace"), "balanced-addon-models@model:marketplace");
+  deepEqual(store.modelPathFor("automobile"), "model:automobile");
+
+});
+
 test("#modelFor", function() {
   var container = {
     lookupFactory: sinon.stub().returns({})
@@ -65,3 +75,4 @@ test("#processResponse", function() {
   var result = subject.processResponse({ items: [] });
   deepEqual(result, []);
 });
+
