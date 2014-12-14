@@ -53,7 +53,8 @@ var Store = Ember.Object.extend({
   },
 
   build: function(typeName, attributes) {
-    var model = this.modelFor(typeName).create(attributes || {});
+    var model = this.modelFor(typeName).create();
+    model.ingestJsonItem(attributes);
     model.setProperties({
       container: this.container,
       store: this
@@ -77,6 +78,21 @@ var Store = Ember.Object.extend({
     return this.fetchCollection(typeName, uri, attributes).then(function(collection) {
       return collection.objectAt(0);
     });
+  },
+
+  getItem: function(typeName, uri, attributes) {
+    Ember.assert("Couldn't find " + typeName + " for uri " + uri, Ember.typeOf(uri) === "string");
+
+    var model = this.modelFor(typeName).create(attributes || {});
+    model.setProperties({
+      container: this.container,
+      store: this
+    });
+
+    this.fetch(typeName, uri).then(function(response) {
+      model.ingestJsonItem(response.items[0]);
+    }.bind(this));
+    return model;
   },
 
   fetch: function(type, uri) {

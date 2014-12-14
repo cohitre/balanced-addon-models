@@ -5,8 +5,9 @@ var BalancedApiAdapter = AjaxAdapter.extend({
   serializerName: "balanced-addon-models@serializer:rev1",
 
   host: "https://api.balancedpayments.com",
-  // accepts: 'application/vnd.balancedpayments+json; version=1.1',
-  accepts: "application/vnd.api+json;revision=1.1",
+  accepts: {
+    json: "application/vnd.api+json;revision=1.1",
+  },
   contentType: 'application/json; charset=UTF-8',
 
   headers: function() {
@@ -24,6 +25,13 @@ var BalancedApiAdapter = AjaxAdapter.extend({
       return 'Basic ' + window.btoa(apiKey + ':');
     }
   }.property("api_key"),
+
+  ajax: function(uri, method, settings) {
+    if (settings.data && method.toUpperCase() !== "GET") {
+      settings.data = JSON.stringify(settings.data);
+    }
+    return this._super.call(this, uri, method, settings);
+  }
 });
 
 export default BalancedApiAdapter;

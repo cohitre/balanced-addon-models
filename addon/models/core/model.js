@@ -1,8 +1,8 @@
 import Ember from "ember";
+import EmberValidations from 'ember-validations';
+import ErrorsHandler from "./errors-handler";
 
-var JSON_PROPERTY_KEY = '__json';
-
-var Model = Ember.Object.extend({
+var Model = Ember.Object.extend(EmberValidations.Mixin, {
   getAdapter: function() {
     return this.store.adapterFor(this.constructor);
   },
@@ -10,9 +10,7 @@ var Model = Ember.Object.extend({
 	isLoaded: false,
 	isSaving: false,
 	isDeleted: false,
-	isError: false,
 	isNew: true,
-	isValid: true,
 
 	id: Ember.computed.or('__json.id', '_id'),
 
@@ -28,9 +26,45 @@ var Model = Ember.Object.extend({
 		}
 	}.property('uri'),
 
+  updateUri: Ember.computed.reads("href").readOnly(),
+
+  clearErrors: function() {
+    var errors = this.get("errors");
+    for (var key in errors) {
+      if (Ember.typeOf(errors[key]) === "array") {
+        errors[key].clear();
+      }
+    }
+  },
 	save: function() {
-    Ember.assert("core/model#save method is not implemented", false);
+    this.clearErrors();
+    var successHandler = function(response) {
+      this.ingestJsonItem(response.items[0]);
+      return this;
+    }.bind(this);
+    var errorHandler = function(response) {
+      ErrorsHandler.handle(this, response);
+      return Ember.RSVP.reject(this);
+    }.bind(this);
+
+    var adapter = this.getAdapter();
+    var settings = {
+      data: this.getApiProperties()
+    };
+    var promise;
+    if (this.get("isNew")) {
+      promise = adapter.post(this.get("createUri"), settings);
+    }
+    else {
+      promise = adapter.update(this.get("updateUri"), settings);
+    }
+
+    return promise.then(successHandler, errorHandler);
 	},
+
+  getApiProperties: function() {
+    Ember.assert("core/model#apiProperties method is not implemented in object "+ this, false);
+  },
 
 	delete: function() {
     Ember.assert("core/model#delete method is not implemented", false);
@@ -40,49 +74,10 @@ var Model = Ember.Object.extend({
     Ember.assert("core/model#reload method is not implemented", false);
 	},
 
-	populateFromJsonResponse: function(json) {
-		var decodingUri = this.get('isNew') ? null : this.get('uri');
-		var modelJson = this.constructor.serializer.extractSingle(json, this.constructor, decodingUri);
-
-		if (modelJson) {
-			this._updateFromJson(modelJson);
-		} else {
-			this.setProperties({
-				isNew: false,
-				isError: true
-			});
-
-			this.trigger('becameError');
-		}
-	},
-
-	_updateFromJson: function(json) {
-		var self = this;
-		if (!json) {
-			return;
-		}
-
-		var changes = {
-			isNew: false
-		};
-		changes[JSON_PROPERTY_KEY] = json;
-
-		this.setProperties(changes);
-
-		Ember.changeProperties(function() {
-			for (var prop in json) {
-				if (json.hasOwnProperty(prop)) {
-					var desc = Ember.meta(self.constructor.proto(), false).descs[prop];
-					// don't override computed properties with raw json
-					if (!(desc && desc instanceof Ember.ComputedProperty)) {
-						self.set(prop, json[prop]);
-					}
-				}
-			}
-		});
-
-		this.set('isLoaded', true);
-		this.trigger('didLoad');
+	ingestJsonItem: function(json) {
+    this.setProperties(json);
+    this.set("isLoaded", true);
+    return this;
 	},
 
 	isEqual: function(a, b) {

@@ -20,6 +20,8 @@ var AjaxAdapter = BaseAdapter.extend({
     var deferred = Ember.RSVP.defer();
     settings = Ember.merge({
       contentType: this.get("contentType"),
+      context: this,
+      accepts: this.get("accepts"),
       dataType: "json",
       method: method,
       headers: this.get("headers")

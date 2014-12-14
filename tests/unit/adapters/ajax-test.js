@@ -13,10 +13,12 @@ test("#ajax", function() {
     [
       "/customers",
       {
-        "contentType": undefined,
-        "dataType": "json",
-        "headers": undefined,
-        "method": "GET"
+        accepts: undefined,
+        contentType: undefined,
+        dataType: "json",
+        headers: undefined,
+        method: "GET",
+        context: subject
       }
     ]
   ]);
@@ -45,10 +47,12 @@ test("#fetch", function() {
       "..."
     ]]);
     deepEqual(jQuery.ajax.args, [["https://api.bp.com/marketplaces", {
+      accepts: undefined,
       contentType: undefined,
       dataType: "json",
       headers: undefined,
       method: "GET",
+      context: subject
     }]]);
     stub.restore();
   });
@@ -84,6 +88,8 @@ test("#post", function() {
       dataType: "json",
       headers: undefined,
       method: "POST",
+      accepts: undefined,
+      context: subject,
       data: {
         name: "Cool"
       }
@@ -118,10 +124,12 @@ test("#update", function() {
       "..."
     ]]);
     deepEqual(jQuery.ajax.args, [["https://api.bp.com/marketplaces", {
+      accepts: undefined,
       contentType: undefined,
       dataType: "json",
       headers: undefined,
       method: "PUT",
+      context: subject,
       data: {
         name: "Cool"
       }
@@ -151,10 +159,12 @@ test("#del", function() {
       "..."
     ]]);
     deepEqual(jQuery.ajax.args, [["https://api.bp.com/marketplaces", {
+      accepts: undefined,
       contentType: undefined,
       dataType: "json",
       headers: undefined,
       method: "DELETE",
+      context: subject,
     }]]);
     stub.restore();
   });

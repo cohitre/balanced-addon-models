@@ -8,10 +8,12 @@ test("default", function() {
   var properties = subject.getProperties("serializerName", "host", "accepts", "contentType");
 
   deepEqual(properties, {
-    serializerName: "balanced-addon-models@serializer:rev1",
-    host: "https://api.balancedpayments.com",
-    accepts: "application/vnd.api+json;revision=1.1",
+    accepts: {
+      json: "application/vnd.api+json;revision=1.1"
+    },
     contentType: "application/json; charset=UTF-8",
+    host: "https://api.balancedpayments.com",
+    serializerName: "balanced-addon-models@serializer:rev1",
   });
 });
 

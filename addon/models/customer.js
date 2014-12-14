@@ -10,6 +10,9 @@ var CUSTOMER_TYPES = {
 var Customer = Model.extend({
   fetchBankAccounts: BK.fetchCollection("bank_account"),
   fetchCards: BK.fetchCollection("card"),
+
+  createUri: "/customers",
+
   fetchFundingInstruments: BK.fetchCollection("funding-instrument", "search_uri", {
     type: ["card", "bank_account"]
   }),
@@ -17,8 +20,7 @@ var Customer = Model.extend({
   fetchDisputes: BK.fetchCollection("dispute"),
   fetchTransactions: BK.fetchCollection("transaction"),
 
-  fetchLogs: BK.fetchCollection("log"),
-  logs_uri: "/logs",
+  fetchLogs: BK.fetchCollectionForUri("log", "/logs"),
 
   search_uri: Ember.computed(function() {
     return this.get("href") + "/search";
@@ -133,7 +135,21 @@ var Customer = Model.extend({
 
   status: function() {
     return this.get('is_identity_verified') ? 'verified' : 'unverified';
-  }.property('is_identity_verified')
+  }.property('is_identity_verified'),
+
+  getApiProperties: function() {
+    var properties = ["address", "business_name", "dob_month", "dob_year", "ein", "email", "meta", "name", "phone", "source", "ssn_last4"];
+    var results = {};
+
+    Ember.A(properties).forEach(function (propName) {
+      var value = this.get(propName);
+      if (!Ember.isBlank(value)) {
+        results[propName] = value;
+      }
+    }.bind(this));
+
+    return results;
+  },
 });
 
 Customer.reopenClass({
