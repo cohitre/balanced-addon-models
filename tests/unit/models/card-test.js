@@ -1,11 +1,14 @@
 import Ember from "ember";
-import { test, moduleForModel } from 'ember-qunit';
+import { test, moduleFor } from 'ember-qunit';
+import MH from "../../helpers/model-helpers";
 
-moduleForModel("card", "model - Card", {
-  needs: ['model:customer', "model:bank-account"]
+moduleFor("balanced-addon-models@model:card", "model - Card");
+
+test("#adapter", MH.shouldUseBalancedApiAdapter());
+test("#isBankAccount", function() {
+  deepEqual(this.subject().get("isBankAccount"), false);
 });
 
-test("#expectedCreditDaysOffset", function() {
-  var account = this.subject();
-  equal(account.get("expectedCreditDaysOffset"), 2);
+test("#isCard", function() {
+  deepEqual(this.subject().get("isCard"), true);
 });

@@ -1,14 +1,14 @@
 import Ember from "ember";
-import { test, moduleForModel } from 'ember-qunit';
+import { test, moduleFor } from 'ember-qunit';
+import MH from "../../helpers/model-helpers";
 
-moduleForModel("funding-instrument", "model - FundingInstrument", {
-  needs: ["model:customer"]
+moduleFor("balanced-addon-models@model:funding-instrument", "model - FundingInstrument");
+
+test("#adapter", MH.shouldUseBalancedApiAdapter());
+test("#isBankAccount", function() {
+  deepEqual(this.subject().get("isBankAccount"), false);
 });
 
-test("customer relationship", function() {
-  var subject = this.store().modelFor("funding-instrument");
-  var relationship = Ember.get(subject, "relationshipsByName").get("customer");
-
-  equal(relationship.key, "customer");
-  equal(relationship.kind, "belongsTo");
+test("#isCard", function() {
+  deepEqual(this.subject().get("isCard"), false);
 });
