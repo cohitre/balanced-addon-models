@@ -2,11 +2,12 @@ import Ember from "ember";
 
 var Rev1Serializer = Ember.Object.extend({
 	extractCollection: function(rootJson) {
-		var collection = Ember.A();
+    var self = this;
+    var collection = Ember.A();
 
 		var populateFunc = function(val, typeName) {
-			collection.push(this.populateObject(val, typeName, rootJson));
-		}.bind(this);
+			collection.push(self.populateObject(val, typeName, rootJson));
+		};
 
 		each(rootJson, function(values, typeName) {
       if (Ember.isArray(values)) {

@@ -25,7 +25,8 @@ var MethodGenerators = {
     };
   },
 
-  propertiesGetter: function(propertyNames) {
+  propertiesGetter: function() {
+    var propertyNames = arguments;
     return function() {
       return this.getProperties.apply(this, propertyNames);
     };

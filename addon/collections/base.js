@@ -19,12 +19,13 @@ export default Ember.ArrayProxy.extend({
   },
 
   loadUri: function(uri) {
+    var self = this;
     var store = this.get("store");
     return store.fetch(this.modelType, uri).then(function(response) {
-      this.ingestResponse(response);
-      this.set("isLoaded", true);
-      return this;
-    }.bind(this));
+      self.ingestResponse(response);
+      self.set("isLoaded", true);
+      return self;
+    });
   },
 
   loadNext: function() {

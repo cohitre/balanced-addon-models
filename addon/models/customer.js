@@ -27,16 +27,18 @@ var Customer = Model.extend({
   }).property("href"),
 
   bankAccounts: Ember.computed(function() {
+    var self = this;
     this.fetchBankAccounts().then(function(collection) {
-      this.set("bankAccounts", collection);
-    }.bind(this));
+      self.set("bankAccounts", collection);
+    });
     return undefined;
   }),
 
   cards: Ember.computed(function() {
+    var self = this;
     this.fetchCards().then(function(collection) {
-      this.set("cards", collection);
-    }.bind(this));
+      self.set("cards", collection);
+    });
     return undefined;
   }),
 

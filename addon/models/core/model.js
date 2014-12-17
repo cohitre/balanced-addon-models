@@ -37,21 +37,23 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
     }
   },
 	save: function() {
+    var self = this;
     this.clearErrors();
     var successHandler = function(response) {
-      this.ingestJsonItem(response.items[0]);
-      return this;
-    }.bind(this);
+      self.ingestJsonItem(response.items[0]);
+      return self;
+    };
     var errorHandler = function(response) {
-      ErrorsHandler.handle(this, response);
-      return Ember.RSVP.reject(this);
-    }.bind(this);
+      ErrorsHandler.handle(self, response);
+      return Ember.RSVP.reject(self);
+    };
 
     var adapter = this.getAdapter();
     var settings = {
       data: this.getApiProperties()
     };
     var promise;
+
     if (this.get("isNew")) {
       promise = adapter.post(this.get("createUri"), settings);
     }

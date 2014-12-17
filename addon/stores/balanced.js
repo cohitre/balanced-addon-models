@@ -47,9 +47,10 @@ var Store = Ember.Object.extend({
   },
 
   processResponse: function(response) {
+    var self = this;
     return Ember.A(response.items).map(function(item) {
-      return this.build(item._type, item);
-    }.bind(this));
+      return self.build(item._type, item);
+    });
   },
 
   build: function(typeName, attributes) {
@@ -91,7 +92,7 @@ var Store = Ember.Object.extend({
 
     this.fetch(typeName, uri).then(function(response) {
       model.ingestJsonItem(response.items[0]);
-    }.bind(this));
+    });
     return model;
   },
 
