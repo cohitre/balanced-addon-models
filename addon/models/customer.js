@@ -137,19 +137,7 @@ var Customer = Model.extend({
     return this.get('is_identity_verified') ? 'verified' : 'unverified';
   }.property('is_identity_verified'),
 
-  getApiProperties: function() {
-    var properties = ["address", "business_name", "dob_month", "dob_year", "ein", "email", "meta", "name", "phone", "source", "ssn_last4"];
-    var results = {};
-
-    Ember.A(properties).forEach(function (propName) {
-      var value = this.get(propName);
-      if (!Ember.isBlank(value)) {
-        results[propName] = value;
-      }
-    }.bind(this));
-
-    return results;
-  },
+  getApiProperties: BK.propertiesGetter("address", "business_name", "dob_month", "dob_year", "ein", "email", "meta", "name", "phone", "source", "ssn_last4"),
 });
 
 Customer.reopenClass({

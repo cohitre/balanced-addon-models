@@ -25,6 +25,12 @@ var MethodGenerators = {
     };
   },
 
+  propertiesGetter: function(propertyNames) {
+    return function() {
+      return this.getProperties.apply(this, propertyNames);
+    };
+  },
+
   computed: {
     readOnly: function(fieldName) {
       return Ember.computed.reads(fieldName).readOnly();
