@@ -82,7 +82,7 @@ test("#post", function() {
   subject.post("/marketplaces", data).then(function(r) {
     deepEqual(serializer.extractCollection.args, [[
       "..."
-    ]]);
+    ]], "Extracted collection is ajax response");
     deepEqual(jQuery.ajax.args, [["https://api.bp.com/marketplaces", {
       contentType: undefined,
       dataType: "json",
@@ -90,9 +90,7 @@ test("#post", function() {
       method: "POST",
       accepts: undefined,
       context: subject,
-      data: {
-        name: "Cool"
-      }
+      data: '{"name":"Cool"}'
     }]]);
     stub.restore();
   });
@@ -130,9 +128,7 @@ test("#update", function() {
       headers: undefined,
       method: "PUT",
       context: subject,
-      data: {
-        name: "Cool"
-      }
+      data: '{"name":"Cool"}'
     }]]);
     stub.restore();
   });

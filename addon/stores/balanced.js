@@ -7,7 +7,7 @@ var Store = Ember.Object.extend({
   },
 
   modelPathFor: function(typeName) {
-    var mapped = this.modelMaps[typeName];
+    var mapped = this.modelMaps[typeName.replace(/-/g, "_")];
 
     if (Ember.isBlank(mapped)) {
       return "balanced-addon-models@model:" + typeName;

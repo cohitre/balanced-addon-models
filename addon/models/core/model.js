@@ -1,8 +1,13 @@
 import Ember from "ember";
 import EmberValidations from 'ember-validations';
-import ErrorsHandler from "./errors-handler";
+import ErrorsHandler from "../error-handlers/base";
 
 var Model = Ember.Object.extend(EmberValidations.Mixin, {
+  getErrorsHandler: function() {
+    return ErrorsHandler.create({
+      model: this
+    });
+  },
   getAdapter: function() {
     return this.store.adapterFor(this.constructor);
   },
@@ -44,7 +49,8 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
       return self;
     };
     var errorHandler = function(response) {
-      ErrorsHandler.handle(self, response);
+      var errorsHandler = self.getErrorsHandler();
+      errorsHandler.populateFromResponse(response);
       return Ember.RSVP.reject(self);
     };
 
@@ -52,20 +58,21 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
     var settings = {
       data: this.getApiProperties()
     };
-    var promise;
 
-    if (this.get("isNew")) {
-      promise = adapter.post(this.get("createUri"), settings);
-    }
-    else {
-      promise = adapter.update(this.get("updateUri"), settings);
-    }
-
-    return promise.then(successHandler, errorHandler);
+    return this.validate()
+      .then(function() {
+        if (self.get("isNew")) {
+          return adapter.post(self.get("createUri"), settings);
+        }
+        else {
+          return adapter.update(self.get("updateUri"), settings);
+        }
+      })
+      .then(successHandler, errorHandler);
 	},
 
   getApiProperties: function() {
-    Ember.assert("core/model#apiProperties method is not implemented in object "+ this, false);
+    Ember.assert("core/model#getApiProperties method is not implemented in object "+ this, false);
   },
 
 	delete: function() {
@@ -86,9 +93,6 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
 		b = b || this;
 		return Ember.get(a, 'id') === Ember.get(b, 'id');
 	}
-});
-
-Model.reopenClass({
 });
 
 export default Model;

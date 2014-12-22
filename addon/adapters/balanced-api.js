@@ -1,7 +1,7 @@
 import Ember from "ember";
-import AjaxAdapter from "./ajax";
+import BalancedApiBaseAdapter from "./balanced-api-base";
 
-var BalancedApiAdapter = AjaxAdapter.extend({
+var BalancedApiAdapter = BalancedApiBaseAdapter.extend({
   serializerName: "balanced-addon-models@serializer:rev1",
 
   host: "https://api.balancedpayments.com",
@@ -10,13 +10,13 @@ var BalancedApiAdapter = AjaxAdapter.extend({
   },
   contentType: 'application/json; charset=UTF-8',
 
-  headers: function() {
+  headers: Ember.computed(function() {
     return {
       Authorization: this.get("encodedApiKey"),
     };
-  }.property("encodedApiKey"),
+  }).property("encodedApiKey"),
 
-  encodedApiKey: function() {
+  encodedApiKey: Ember.computed(function() {
     var apiKey = this.get("api_key");
     if (Ember.isBlank(apiKey)) {
       return null;
@@ -24,14 +24,7 @@ var BalancedApiAdapter = AjaxAdapter.extend({
     else {
       return 'Basic ' + window.btoa(apiKey + ':');
     }
-  }.property("api_key"),
-
-  ajax: function(uri, method, settings) {
-    if (settings.data && method.toUpperCase() !== "GET") {
-      settings.data = JSON.stringify(settings.data);
-    }
-    return this._super.call(this, uri, method, settings);
-  }
+  }).property("api_key"),
 });
 
 export default BalancedApiAdapter;

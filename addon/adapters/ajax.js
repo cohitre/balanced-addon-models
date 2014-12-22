@@ -27,6 +27,10 @@ var AjaxAdapter = BaseAdapter.extend({
       headers: this.get("headers")
     }, settings);
 
+    if (settings.data && method.toUpperCase() !== "GET") {
+      settings.data = JSON.stringify(settings.data);
+    }
+
     jQuery.ajax(uri, settings).then(deferred.resolve, deferred.reject);
     return deferred.promise;
   },

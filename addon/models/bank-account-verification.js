@@ -3,8 +3,8 @@ import Model from "./core/model";
 import BK from "./core/method-generators";
 
 var BankAccountVerification = Model.extend({
-  updatedAt: BK.computed.parseDate("updated_at"),
-  createdAt: BK.computed.parseDate("updated_at"),
+  updatedAt: BK.computed.parseDate("updated_at").readOnly(),
+  createdAt: BK.computed.parseDate("updated_at").readOnly(),
 
   isVerified: isStatus("verified").readOnly(),
   isFailed: isStatus("failed").readOnly(),
