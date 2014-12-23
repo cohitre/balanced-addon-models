@@ -1,49 +1,56 @@
 import Ember from "ember";
 
+var IS_PRODUCTION = false;
 var ApiKeyMerchantPropertiesCreator = Ember.Object.extend({
   getApiProperties: function() {
     var model = this.get("model");
-    if (model.get("isPerson")) {
-      return this.getPersonApiProperties(model);
-    }
-    else {
-      return this.getBusinessApiProperties(model);
-    }
-  },
+    var attributes = model.get("isPerson") ?
+      this.getPersonApiProperties(model) :
+      this.getBusinessApiProperties(model);
 
-  getMerchantAttributes: function(model) {
     return {
-      production: true,
-      phone_number: model.get("phone_number"),
-      type: model.get("isBusiness") ? "business" : "person"
+      merchant: attributes
     };
   },
 
   getBusinessApiProperties: function(model) {
     Ember.assert("ApiKey model must be of type business", model.get("isBusiness"));
 
-    var businessAttributes = model.get("business");
-    var attributes = this.getMerchantAttributes(model);
-    attributes.person = model.get("person");
-    Ember.merge(attributes, businessAttributes);
-    attributes.incorporation_date = model.get("formattedIncorporationDate");
-
     return {
-      merchant: attributes
+      type: "business",
+      production: IS_PRODUCTION,
+
+      name: model.get("businessName"),
+      tax_id: model.get("businessTaxId"),
+      address: model.get("businessAddressLine1"),
+      postal_code: model.get("businessAddressPostalCode"),
+      phone_number: model.get("businessPhoneNumber"),
+      incorporation_date: model.get("formattedIncorporationDate"),
+
+      person: this.getPersonAttributes(model)
     };
   },
 
   getPersonApiProperties: function(model) {
     Ember.assert("ApiKey model must be of type person", model.get("isPerson"));
 
-    var personAttributes = model.get("person");
-    var attributes = this.getMerchantAttributes(model);
-    Ember.merge(attributes, personAttributes);
-
-    return {
-      merchant: attributes
+    var defaults = {
+      type: "person",
+      production: IS_PRODUCTION,
     };
-  }
+    return Ember.merge(defaults, this.getPersonAttributes(model));
+  },
+
+  getPersonAttributes: function(model) {
+    return {
+      ssn_last_4: model.get("personSsnLast4"),
+      name: model.get("personFullName"),
+      dob: model.get("formattedPersonDateOfBirth"),
+      postal_code: model.get("personAddressPostalCode"),
+      phone_number: model.get("personPhoneNumber"),
+    };
+  },
+
 });
 
 export default ApiKeyMerchantPropertiesCreator;

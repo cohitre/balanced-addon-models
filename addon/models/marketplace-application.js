@@ -1,5 +1,7 @@
+import Ember from "ember";
 import Model from "./core/model";
 import BK from "./core/method-generators";
+import ErrorsHandler from "./error-handlers/gandalf-base";
 
 var MarketplaceApplication = Model.extend({
   createUri: "/applications",
@@ -8,30 +10,38 @@ var MarketplaceApplication = Model.extend({
   createdAt: BK.computed.parseDate("updated_at"),
 
   getApiProperties: function() {
-    var attributes = {
+    var attributes = this.getProperties(
+      "marketplace_name",
+      "business_type",
+      "full_name",
+      "owner_email",
+      "owner_phone_number",
+      "merchant_uri",
+      "domain_url",
+      "support_email",
+      "support_phone_number",
+      "postal_code",
+      "street_address",
+      "current_processor",
+      "current_monthly_volume"
+    );
+    attributes = Ember.merge(attributes, {
       api_key: this.get("secret"),
-    };
+    });
+
     return attributes;
-  }
+  },
+
+  getErrorsHandler: function() {
+    return ErrorsHandler.create({
+      model: this
+    });
+  },
 });
 
 MarketplaceApplication.reopenClass({
   adapterName: "balanced-addon-models@adapter:gandalf-api"
 });
-
-//Content-Disposition: form-data; name="marketplace_name"
-//Content-Disposition: form-data; name="business_type"
-//Content-Disposition: form-data; name="full_name"
-//Content-Disposition: form-data; name="owner_email"
-//Content-Disposition: form-data; name="owner_phone_number"
-//Content-Disposition: form-data; name="domain_url"
-//Content-Disposition: form-data; name="support_email"
-//Content-Disposition: form-data; name="support_phone_number"
-//Content-Disposition: form-data; name="postal_code"
-//Content-Disposition: form-data; name="street_address"
-//Content-Disposition: form-data; name="current_processor"
-//Content-Disposition: form-data; name="current_monthly_volume"
-//Content-Disposition: form-data; name="status"
 
 
 export default MarketplaceApplication;
