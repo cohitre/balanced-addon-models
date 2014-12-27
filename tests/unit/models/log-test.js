@@ -5,6 +5,7 @@ import MH from "../../helpers/model-helpers";
 moduleFor("balanced-addon-models@model:log", "model - Log");
 
 test("#adapter", MH.shouldUseBalancedApiAdapter());
+test("#serializer", MH.shouldUseBalancedApiSerializer());
 
 test("#isStatusSucceeded", function() {
   var subject = this.subject();

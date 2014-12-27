@@ -5,6 +5,8 @@ import MH from "../../helpers/model-helpers";
 moduleFor("balanced-addon-models@model:bank-account", "model - BankAccount");
 
 test("#adapter", MH.shouldUseBalancedApiAdapter());
+test("#serializer", MH.shouldUseBalancedApiSerializer());
+
 test("#isBankAccount", function() {
   deepEqual(this.subject().get("isBankAccount"), true);
 });

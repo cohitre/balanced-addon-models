@@ -1,8 +1,9 @@
+
 import Ember from "ember";
 import { test, moduleFor } from 'ember-qunit';
-import MH from "../../helpers/model-helpers";
+import MH from "../../../helpers/model-helpers";
 
-moduleFor("balanced-addon-models@model:transaction", "model - Transaction");
+moduleFor("balanced-addon-models@model:account", "model - Account");
 
 test("#adapter", MH.shouldUseBalancedApiAdapter());
 test("#serializer", MH.shouldUseBalancedApiSerializer());

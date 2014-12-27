@@ -8,8 +8,4 @@ var FundingInstrument = Model.extend({
   isCard: false,
 });
 
-FundingInstrument.reopenClass({
-  adapterName: "balanced-addon-models@adapter:balanced-api"
-});
-
 export default FundingInstrument;

@@ -11,10 +11,10 @@ export default Ember.ArrayProxy.extend({
     return !Ember.isBlank(this.get("nextUri"));
   }),
 
-  ingestResponse: function(response) {
-    this.set("meta", response.meta);
-    var items = this.get("store").processResponse(response);
+  ingestResponse: function(items, meta) {
+    this.set("meta", meta);
     this.pushObjects(items);
+    this.set("isLoaded", true);
     return items;
   },
 
@@ -22,8 +22,7 @@ export default Ember.ArrayProxy.extend({
     var self = this;
     var store = this.get("store");
     return store.fetch(this.modelType, uri).then(function(response) {
-      self.ingestResponse(response);
-      self.set("isLoaded", true);
+      self.ingestResponse(response.items, response.meta);
       return self;
     });
   },

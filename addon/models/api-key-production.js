@@ -3,10 +3,9 @@ import EmberValidations from "ember-validations";
 import ApiKey from "./api-key";
 import ApiKeyProductionErrorsHandler from "./error-handlers/api-key-production";
 import ApiKeyMerchantPropertiesCreator from "./support/api-key-merchant-properties-creator";
+import VH from "../utils/validation-helpers";
 
-var VALID_DATE_FORMAT = /^(\d\d?)(\s*[-\/]\s*)(\d\d\d\d)$/;
 var VALID_TYPE_VALUES = ["business", "person"];
-var PHONE_NUMBER_VALID_CHARACTERS = /[\d- () +]/g;
 
 var ApiKeyProduction = ApiKey.extend({
   validations: {
@@ -30,6 +29,18 @@ var ApiKeyProduction = ApiKey.extend({
         "if": "isBusiness"
       }
     },
+    businessPhoneNumber: {
+      presence: {
+        "if": "isBusiness"
+      },
+      length: {
+        maximum: 15,
+        "if": "isBusiness"
+      },
+      inline: EmberValidations.validator(function() {
+        return VH.validatePhoneFormat(this.get("businessPhoneNumber"), this.get("isBusiness"));
+      })
+    },
     businessAddressLine1: {
       presence: {
         "if": "isBusiness"
@@ -40,9 +51,7 @@ var ApiKeyProduction = ApiKey.extend({
         "if": "isBusiness"
       },
       inline: EmberValidations.validator(function() {
-        if (this.get("isBusiness")) {
-          return validateDateFormat(this.get("businessIncorporationDate"));
-        }
+        return VH.validateDateFormat(this.get("businessIncorporationDate"), this.get("isBusiness"));
       })
     },
     personFullName: {
@@ -59,7 +68,7 @@ var ApiKeyProduction = ApiKey.extend({
     personDateOfBirth: {
       presence: true,
       inline: EmberValidations.validator(function() {
-        return validateDateFormat(this.get("personDateOfBirth"));
+        return VH.validateDateFormat(this.get("personDateOfBirth"), true);
       })
     },
     personPhoneNumber: {
@@ -67,12 +76,11 @@ var ApiKeyProduction = ApiKey.extend({
         "if": "isPerson"
       },
       length: {
-        maximum: 15
+        maximum: 15,
+        "if": "isPerson"
       },
       inline: EmberValidations.validator(function() {
-        if (this.get("isPerson")) {
-          return validatePhoneFormat(this.get("personPhoneNumber"));
-        }
+        return VH.validatePhoneFormat(this.get("personPhoneNumber"), this.get("isPerson"));
       })
     }
   },
@@ -113,7 +121,7 @@ function generateFormattedDate(propName) {
   return Ember.computed(propName, function() {
     var date = this.get(propName);
     if (Ember.typeOf(date) === "string") {
-      var match = date.match(VALID_DATE_FORMAT);
+      var match = date.match(VH.VALID_DATE_FORMAT);
       if (match) {
       var year = parseInt(match[3]);
       var month = parseInt(match[1]);
@@ -130,35 +138,6 @@ function getApiKeyPropertiesCreator(model) {
   return ApiKeyMerchantPropertiesCreator.create({
     model: model
   });
-}
-
-function validateDateFormat(date) {
-  var MONTHS, match, month, year;
-  date = date || "";
-  MONTHS = Ember.A([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
-  match = date.match(VALID_DATE_FORMAT);
-  if (Ember.isBlank(match)) {
-    return "invalid date format";
-  }
-  else {
-    year = parseInt(match[3]);
-    month = parseInt(match[1]);
-    var CURRENT_YEAR = new Date().getFullYear();
-
-    if (!(1800 < year && year <= CURRENT_YEAR)) {
-      return "invalid year " + year;
-    }
-    if (!MONTHS.contains(month)) {
-      return "invalid month " + month;
-    }
-  }
-}
-
-function validatePhoneFormat(number) {
-  number = number || "";
-  if (!Ember.isBlank(number.replace(PHONE_NUMBER_VALID_CHARACTERS, ""))) {
-    return 'has invalid characters (only "+", "-", "(", ")" spaces and numbers are accepted)';
-  }
 }
 
 export default ApiKeyProduction;

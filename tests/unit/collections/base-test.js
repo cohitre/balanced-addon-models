@@ -31,21 +31,14 @@ test("#hasNextPage", function() {
 });
 
 test("#ingestResponse", function() {
-  var store = {
-    processResponse: sinon.stub().returns([1, 2, 3])
-  };
-  var response = {
-    meta: [3, 4, 2]
-  };
+  var items = [1, 2, 3];
   var subject = this.subject();
   subject.setProperties({
-    store: store,
     content: [4]
   });
-  subject.ingestResponse(response);
-
-  deepEqual(store.processResponse.args, [[response]]);
+  subject.ingestResponse(items, [3, 4, 2]);
   deepEqual(subject.get("content"), [4, 1, 2, 3]);
+  deepEqual(subject.get("meta"), [3, 4, 2]);
 });
 
 test("#loadUri", function(uri) {

@@ -12,6 +12,10 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
     return this.store.adapterFor(this.constructor);
   },
 
+  getSerializer: function() {
+    return this.store.serializerFor(this.constructor);
+  },
+
 	isLoaded: false,
 	isSaving: false,
 	isDeleted: false,
@@ -45,8 +49,8 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
     var self = this;
     this.clearErrors();
     var successHandler = function(response) {
-      self.ingestJsonItem(response.items[0]);
-      return self;
+      var item = self.getSerializer().extractSingle(response);
+      return self.ingestJsonItem(item);
     };
     var errorHandler = function(response) {
       var errorsHandler = self.getErrorsHandler();
@@ -54,22 +58,33 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
       return Ember.RSVP.reject(self);
     };
 
-    var adapter = this.getAdapter();
-    var settings = {
-      data: this.getApiProperties()
-    };
-
     return this.validate()
       .then(function() {
         if (self.get("isNew")) {
-          return adapter.post(self.get("createUri"), settings);
+          return self.createInstance();
         }
         else {
-          return adapter.update(self.get("updateUri"), settings);
+          return self.updateInstance();
         }
       })
       .then(successHandler, errorHandler);
 	},
+
+  createInstance: function() {
+    return this.getAdapter().post(this.get("createUri"), {
+      data: this.getApiProperties()
+    }).then(function(response) {
+      return response.responseJSON;
+    });
+  },
+
+  updateInstance: function() {
+    return this.getAdapter().update(this.get("updateUri"), {
+      data: this.getApiProperties()
+    }).then(function(response) {
+      return response.responseJSON;
+    });
+  },
 
   getApiProperties: function() {
     Ember.assert("core/model#getApiProperties method is not implemented in object "+ this, false);
@@ -93,6 +108,11 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
 		b = b || this;
 		return Ember.get(a, 'id') === Ember.get(b, 'id');
 	}
+});
+
+Model.reopenClass({
+  serializerName: "balanced-addon-models@serializer:rev1",
+  adapterName: "balanced-addon-models@adapter:balanced-api"
 });
 
 export default Model;

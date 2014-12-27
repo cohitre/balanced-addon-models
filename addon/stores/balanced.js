@@ -33,9 +33,23 @@ var Store = Ember.Object.extend({
       modelClass = typeName;
     }
     Ember.assert("Couldn't get modelClass from " + typeName, modelClass);
+    Ember.assert("Couldn't get adapterName from " + typeName, !Ember.isBlank(modelClass.adapterName));
     return this.container.lookupFactory(modelClass.adapterName).create({
       api_key: this.get("apiKey")
     });
+  },
+
+  serializerFor: function(typeName) {
+    var modelClass = typeName;
+    if (Ember.typeOf(typeName) === "string") {
+      modelClass = this.modelFor(typeName);
+    }
+    else if (Ember.typeOf(typeName) === "class") {
+      modelClass = typeName;
+    }
+    Ember.assert("Couldn't get modelClass from " + typeName, modelClass);
+    Ember.assert("Couldn't get serializerName from " + typeName, !Ember.isBlank(modelClass.serializerName));
+    return this.container.lookupFactory(modelClass.serializerName).create();
   },
 
   collectionFor: function(typeName) {
@@ -64,6 +78,10 @@ var Store = Ember.Object.extend({
   },
 
   fetchCollection: function(typeName, uri, attributes) {
+    var self = this;
+    var adapter = this.adapterFor(typeName);
+    var serializer = this.serializerFor(typeName);
+
     var collection = this.collectionFor(typeName).create({
       content: [],
       modelType: typeName,
@@ -71,14 +89,30 @@ var Store = Ember.Object.extend({
       store: this
     });
 
-    uri = QueryStringCreator.uri(uri, attributes);
-    return collection.loadUri(uri);
+    return adapter.fetch(QueryStringCreator.uri(uri, attributes))
+      .then(function(response) {
+        response = serializer.extractCollection(response);
+        return response;
+      })
+      .then(function(collectionResponse) {
+        var items = self.processResponse(collectionResponse);
+        collection.ingestResponse(items, collectionResponse.meta);
+        return collection;
+      });
   },
 
   fetchItem: function(typeName, uri, attributes) {
-    return this.fetchCollection(typeName, uri, attributes).then(function(collection) {
-      return collection.objectAt(0);
-    });
+    var self = this;
+    var adapter = this.adapterFor(typeName);
+    var serializer = this.serializerFor(typeName);
+
+    return adapter.fetch(QueryStringCreator.uri(uri, attributes))
+      .then(function(response) {
+        return serializer.extractSingle(response);
+      })
+      .then(function(item) {
+        return self.build(typeName, item);
+      });
   },
 
   getItem: function(typeName, uri, attributes) {

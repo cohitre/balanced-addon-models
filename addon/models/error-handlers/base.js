@@ -1,19 +1,24 @@
 import Ember from "ember";
 
+var get = Ember.get;
+
 var BaseErrorsHandler = Ember.Object.extend({
   addErrorToField: function(fieldName, errorMessage) {
-    var errors = this.get("model.errors");
-    errors.get(fieldName).pushObject(errorMessage);
+    get(this.get("model.errors"), fieldName).pushObject(errorMessage);
+  },
+
+  addErrorsToField: function(fieldName, errorMessages) {
+    get(this.get("model.errors"), fieldName).pushObjects(errorMessages);
   },
 
   addRootError: function(errorMessage) {
     this.addErrorToField("_root", errorMessage);
   },
 
-  handleApiResponse: function(errors) {
+  handleApiResponse: function(response) {
     var self = this;
     var hasValidationError = false;
-    Ember.A(errors).forEach(function(error) {
+    Ember.A(response.errors).forEach(function(error) {
       if (error.extras) {
         hasValidationError = true;
         for (var fieldName in error.extras) {
@@ -37,11 +42,11 @@ var BaseErrorsHandler = Ember.Object.extend({
   },
 
   populateFromResponse: function(response) {
-    if (response.responseJSON) {
-      // responseJSON.errors is the json-api v1.1 default
-      this.handleApiResponse(response.responseJSON.errors);
+    // response.errors is the json-api v1.1 default
+    if (!Ember.isBlank(response.errors)){
+      this.handleApiResponse(response);
     }
-    else if (response.statusText === "error") {
+    else {
       this.handleUnknownError();
     }
   }
@@ -55,6 +60,5 @@ function cleanDescription(description) {
     return description;
   }
 }
-
 
 export default BaseErrorsHandler;

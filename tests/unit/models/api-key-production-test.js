@@ -12,6 +12,7 @@ moduleFor("balanced-addon-models@model:api-key-production", "model - ApiKey", {
 });
 
 test("#adapter", MH.shouldUseBalancedApiAdapter("balanced-addon-models@adapter:balanced-api-base"));
+test("#serializer", MH.shouldUseBalancedApiSerializer());
 
 test("type validations", function() {
   var self = this;

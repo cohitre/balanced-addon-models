@@ -24,6 +24,11 @@ var Rev1Serializer = Ember.Object.extend({
 		};
 	},
 
+  extractSingle: function(rootJson) {
+    var result = this.extractCollection(rootJson);
+    return result.items[0];
+  },
+
 	populateObject: function(modelObj, objType, rootJson) {
 		var linksValues = {};
 		linksValues[objType + '.id'] = modelObj.id;

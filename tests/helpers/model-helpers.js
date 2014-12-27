@@ -14,6 +14,13 @@ var ModelHelpers = {
       var adapterName = this.subject().constructor.adapterName;
       deepEqual(adapterName, expectation);
     };
+  },
+  shouldUseBalancedApiSerializer: function(expectation) {
+    expectation = expectation || "balanced-addon-models@serializer:rev1";
+    return function() {
+      var adapterName = this.subject().constructor.serializerName;
+      deepEqual(adapterName, expectation);
+    };
   }
 };
 

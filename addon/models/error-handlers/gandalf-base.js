@@ -3,25 +3,18 @@ import BaseErrorHandler from "./base";
 
 var GandalfBase = BaseErrorHandler.extend({
   populateFromResponse: function(response) {
-    if (response.responseJSON) {
-      this.handleApiResponse(response.responseJSON);
+    if (!Ember.isBlank(response)) {
+      this.handleApiResponse(response);
     }
-    else if (response.statusText === "error") {
+    else {
       this.handleUnknownError();
     }
   },
 
   handleApiResponse: function(errors) {
-    var self = this;
-
-    var loopBody = function(attributeName) {
-      return function(message) {
-        self.addErrorToField(attributeName, message);
-      };
-    };
-
-    for (var fieldName in errors) {
-      Ember.A(errors[fieldName]).forEach(loopBody(fieldName));
+    var fieldName;
+    for (fieldName in errors) {
+      this.addErrorsToField(fieldName, errors[fieldName]);
     }
   }
 });
