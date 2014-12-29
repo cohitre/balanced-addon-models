@@ -51,27 +51,16 @@ var BankAccount = FundingInstrument.extend({
     return deferred.promise;
   },
 
-  reload: function() {
-    var self = this;
-    return self.getAdapter().fetch(this.get("href")).then(function(response) {
-      var item = self.getSerializer().extractSingle(response);
-      return self.ingestJsonItem(item);
-    });
-  },
-
   linkToCustomer: function(customer) {
     var self = this;
+    var customerUri;
     if (Ember.typeOf(customer) === "string") {
-      return self.getAdapter()
-        .update(this.get("href"), {
-          customer: customer
-        })
-        .then(function(response) {
-          var item = self.getSerializer().extractSingle(response);
-          return self.ingestJsonItem(item);
-        });
+      customerUri = customer;
     }
 
+    return self.updateProperties({
+      customer: customerUri
+    });
   },
 });
 

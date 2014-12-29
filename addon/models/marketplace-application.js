@@ -1,4 +1,4 @@
-// import Ember from "ember";
+import Ember from "ember";
 import Model from "./core/model";
 import BK from "./core/method-generators";
 import ErrorsHandler from "./error-handlers/gandalf-base";
@@ -6,6 +6,15 @@ import ErrorsHandler from "./error-handlers/gandalf-base";
 var MarketplaceApplication = Model.extend({
   updatedAt: BK.computed.parseDate("updated_at"),
   createdAt: BK.computed.parseDate("updated_at"),
+
+  current_monthly_volume: 0,
+  href: Ember.computed("id", function() {
+    return "/applications/" + this.get("id") + "/";
+  }),
+
+  isAccepted: Ember.computed.equal("status", "ACCEPTED").readOnly(),
+  isPending: Ember.computed.equal("status", "PENDING").readOnly(),
+  isRejected: Ember.computed.equal("status", "REJECTED").readOnly(),
 
   createUri: "/applications",
   ingestApiKey: function(apiKey) {

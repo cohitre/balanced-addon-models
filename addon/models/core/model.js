@@ -73,9 +73,25 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
   createInstance: function() {
     return this.getAdapter().post(this.get("createUri"), {
       data: this.getApiProperties()
-    }).then(function(response) {
-      return response.responseJSON;
     });
+  },
+
+  updateProperties: function(data) {
+    var self = this;
+    var href = this.get("updateUri");
+    var settings = {
+      data: data
+    };
+
+    return this.getAdapter().update(href, settings)
+      .then(function(response) {
+        var item = self.getSerializer().extractSingle(response);
+        return self.ingestJsonItem(item);
+      }, function(response) {
+        var errorsHandler = self.getErrorsHandler();
+        errorsHandler.populateFromResponse(response);
+        return Ember.RSVP.reject(self);
+      });
   },
 
   updateInstance: function() {
@@ -94,9 +110,15 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
     Ember.assert("core/model#delete method is not implemented", false);
 	},
 
-	reload: function() {
-    Ember.assert("core/model#reload method is not implemented", false);
-	},
+  reload: function() {
+    var self = this;
+    return self.getAdapter()
+      .fetch(this.get("href"))
+      .then(function(response) {
+        var item = self.getSerializer().extractSingle(response);
+        return self.ingestJsonItem(item);
+      });
+  },
 
 	ingestJsonItem: function(json) {
     this.setProperties(json);
