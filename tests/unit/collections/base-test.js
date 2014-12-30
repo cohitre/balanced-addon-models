@@ -42,35 +42,20 @@ test("#ingestResponse", function() {
 });
 
 test("#loadUri", function(uri) {
-  var store = {
-    processResponse: sinon.stub().returns([]),
-    fetch: sinon.stub().returns(Ember.RSVP.resolve({
-      meta: "metaFields",
-      items: []
-    }))
-  };
-
+  var store = buildStubbedStore();
   var subject = this.subject();
+
   subject.setProperties({
     store: store,
     modelType: "customer",
     content: []
   });
-  subject.loadUri("/customers").then(function(s) {
-    deepEqual(s.get("meta"), "metaFields");
-    equal(subject, s);
-    deepEqual(store.fetch.args, [["customer", "/customers"]]);
-  });
+  subject.loadUri("/customers");
+  deepEqual(store.loadIntoCollection.args, [["customer", subject, "/customers"]]);
 });
 
 test("#loadNext", function() {
-  var store = {
-    processResponse: sinon.stub().returns([]),
-    fetch: sinon.stub().returns(Ember.RSVP.resolve({
-      meta: "metaFields",
-      items: []
-    }))
-  };
+  var store = buildStubbedStore();
 
   var subject = this.subject();
   subject.setProperties({
@@ -79,9 +64,18 @@ test("#loadNext", function() {
     content: [],
     nextUri: "/marketplaces"
   });
-  subject.loadNext().then(function(s) {
-    deepEqual(s.get("meta"), "metaFields");
-    equal(subject, s);
-    deepEqual(store.fetch.args, [["marketplace", "/marketplaces"]]);
-  });
+  subject.loadNext();
+  deepEqual(store.loadIntoCollection.args, [["marketplace", subject, "/marketplaces"]]);
 });
+
+function buildStubbedStore() {
+  var response = {
+    meta: {
+      next: "/cool"
+    },
+    items: []
+  };
+  return {
+    loadIntoCollection: sinon.stub().returns(Ember.RSVP.resolve(response))
+  };
+}

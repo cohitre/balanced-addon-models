@@ -142,8 +142,4 @@ var Customer = Model.extend({
   getApiProperties: BK.propertiesGetter("address", "business_name", "dob_month", "dob_year", "ein", "email", "meta", "name", "phone", "source", "ssn_last4"),
 });
 
-Customer.reopenClass({
-  adapterName: "balanced-addon-models@adapter:balanced-api",
-});
-
 export default Customer;

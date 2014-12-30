@@ -10,7 +10,7 @@ var BankAccount = FundingInstrument.extend({
   canCredit: BK.computed.readOnly("can_credit"),
 
   hasCustomer: Ember.computed.notEmpty("customer_uri").readOnly(),
-  hasVerification: Ember.computed.notEmpty("verification"),
+  hasVerification: Ember.computed.notEmpty("verification_uri").readOnly(),
   isVerifiable: Ember.computed.reads("hasCustomer").readOnly(),
 
   fetchVerifications: BK.fetchCollection("bank_account_verification"),

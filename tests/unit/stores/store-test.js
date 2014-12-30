@@ -52,8 +52,18 @@ test("#adapterFor", function() {
 
 test("#collectionFor", function() {
   var stub = sinon.stub();
-  stub.onCall(0).returns(undefined);
-  stub.onCall(1).returns("cool collection");
+  stub.onCall(0).returns({
+    collectionName: "balanced-addon-models@collection:base"
+  });
+  stub.onCall(1).returns({
+    create: function() {}
+  });
+  stub.onCall(2).returns({
+    collectionName: "balanced-addon-models@collection:customer"
+  });
+  stub.onCall(3).returns({
+    create: function() {}
+  });
 
   var container = {
     lookupFactory: stub
@@ -61,11 +71,14 @@ test("#collectionFor", function() {
   var subject = this.subject();
   subject.set("container", container);
 
-  subject.collectionFor("customers");
+  subject.collectionFor("transaction");
+  subject.collectionFor("customer");
 
   deepEqual(container.lookupFactory.args, [
-    ["balanced-addon-models@collection:customers"],
-    ["balanced-addon-models@collection:base"]
+    ["balanced-addon-models@model:transaction"],
+    ["balanced-addon-models@collection:base"],
+    ["balanced-addon-models@model:customer"],
+    ["balanced-addon-models@collection:customer"]
   ]);
 });
 

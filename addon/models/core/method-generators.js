@@ -16,7 +16,6 @@ var MethodGenerators = {
     };
   },
 
-
   fetchSingle: function(typeName, uriProperty, defaultAttributes) {
     uriProperty = uriProperty || typeName + "_uri";
     return function(attributes) {
@@ -41,16 +40,18 @@ var MethodGenerators = {
         return new Date(this.get(fieldName));
       });
     },
+    collection: function(typeName, uriProperty, defaultAttributes) {
+      uriProperty = uriProperty || typeName + "_uri";
+      return Ember.computed(uriProperty, function() {
+        var uri = this.get(uriProperty);
+        return this.store.getCollection(typeName, uri, defaultAttributes);
+      }).readOnly();
+    },
     single: function(typeName, uriProperty, defaultAttributes) {
       uriProperty = uriProperty || typeName + "_uri";
       return Ember.computed(uriProperty, function() {
         var uri = this.get(uriProperty);
-        if (Ember.isBlank(uri)) {
-          return null;
-        }
-        else {
-          return this.store.getItem(typeName, uri, defaultAttributes);
-        }
+        return this.store.getItem(typeName, uri, defaultAttributes);
       }).readOnly();
     },
   }

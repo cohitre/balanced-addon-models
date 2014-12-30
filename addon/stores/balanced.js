@@ -18,46 +18,34 @@ var Store = Ember.Object.extend({
   },
 
   modelFor: function(typeName) {
-    var modelPath = this.modelPathFor(typeName);
-    var model = this.container.lookupFactory(modelPath);
-    Ember.assert("Cannot find model " + modelPath + " for " + typeName, model);
+    var model;
+    if (Ember.typeOf(typeName) === "string") {
+      model = this.container.lookupFactory(this.modelPathFor(typeName));
+    }
+    else if (Ember.typeOf(typeName) === "class") {
+      model = typeName;
+    }
+    Ember.assert("Cannot find model for " + typeName, model);
     return model;
   },
 
   adapterFor: function(typeName) {
-    var modelClass = typeName;
-    if (Ember.typeOf(typeName) === "string") {
-      modelClass = this.modelFor(typeName);
-    }
-    else if (Ember.typeOf(typeName) === "class") {
-      modelClass = typeName;
-    }
-    Ember.assert("Couldn't get modelClass from " + typeName, modelClass);
-    Ember.assert("Couldn't get adapterName from " + typeName, !Ember.isBlank(modelClass.adapterName));
-    return this.container.lookupFactory(modelClass.adapterName).create({
+    return buildRelatedInstance(this, typeName, "adapterName", {
       api_key: this.get("apiKey")
     });
   },
 
   serializerFor: function(typeName) {
-    var modelClass = typeName;
-    if (Ember.typeOf(typeName) === "string") {
-      modelClass = this.modelFor(typeName);
-    }
-    else if (Ember.typeOf(typeName) === "class") {
-      modelClass = typeName;
-    }
-    Ember.assert("Couldn't get modelClass from " + typeName, modelClass);
-    Ember.assert("Couldn't get serializerName from " + typeName, !Ember.isBlank(modelClass.serializerName));
-    return this.container.lookupFactory(modelClass.serializerName).create();
+    return buildRelatedInstance(this, typeName, "serializerName");
   },
 
   collectionFor: function(typeName) {
-    var CollectionClass = this.container.lookupFactory("balanced-addon-models@collection:" + typeName);
-    if (Ember.isBlank(CollectionClass)) {
-      CollectionClass = this.collectionFor("base");
-    }
-    return CollectionClass;
+    return buildRelatedInstance(this, typeName, "collectionName", {
+      content: [],
+      modelType: typeName,
+      container: this.container,
+      store: this
+    });
   },
 
   processResponse: function(response) {
@@ -78,24 +66,31 @@ var Store = Ember.Object.extend({
   },
 
   fetchCollection: function(typeName, uri, attributes) {
+    var collection = this.collectionFor(typeName);
+
+    return this.loadIntoCollection(typeName, collection, uri, attributes);
+  },
+
+  getCollection: function(typeName, uri, attributes) {
+    var collection = this.collectionFor(typeName);
+
+    this.loadIntoCollection(typeName, collection, uri, attributes);
+    return collection;
+  },
+
+  loadIntoCollection: function(typeName, collection, uri, attributes) {
     var self = this;
     var adapter = this.adapterFor(typeName);
     var serializer = this.serializerFor(typeName);
 
-    var collection = this.collectionFor(typeName).create({
-      content: [],
-      modelType: typeName,
-      container: this.container,
-      store: this
-    });
-
     return adapter.fetch(QueryStringCreator.uri(uri, attributes))
       .then(function(response) {
-        response = serializer.extractCollection(response);
-        return response;
+        return serializer.extractCollection(response);
       })
       .then(function(collectionResponse) {
-        var items = self.processResponse(collectionResponse);
+        var items = Ember.A(collectionResponse.items).map(function(item) {
+          return self.build(item._type || typeName, item);
+        });
         collection.ingestResponse(items, collectionResponse.meta);
         return collection;
       });
@@ -103,10 +98,10 @@ var Store = Ember.Object.extend({
 
   fetchItem: function(typeName, uri, attributes) {
     var self = this;
-    var adapter = this.adapterFor(typeName);
     var serializer = this.serializerFor(typeName);
 
-    return adapter.fetch(QueryStringCreator.uri(uri, attributes))
+    return this.adapterFor(typeName)
+      .fetch(QueryStringCreator.uri(uri, attributes))
       .then(function(response) {
         return serializer.extractSingle(response);
       })
@@ -116,23 +111,20 @@ var Store = Ember.Object.extend({
   },
 
   getItem: function(typeName, uri, attributes) {
-    Ember.assert("Couldn't find " + typeName + " for uri " + uri, Ember.typeOf(uri) === "string");
-
-    var model = this.modelFor(typeName).create(attributes || {});
-    model.setProperties({
-      container: this.container,
-      store: this
-    });
-
-    this.fetch(typeName, uri).then(function(response) {
-      model.ingestJsonItem(response.items[0]);
-    });
+    var model = this.build(typeName, attributes || {});
+    model.set("href", uri);
+    model.reload();
     return model;
   },
-
-  fetch: function(type, uri) {
-    return this.adapterFor(type).fetch(uri);
-  },
 });
+
+function buildRelatedInstance(store, typeName, attributeName, attributes) {
+    var modelClass = store.modelFor(typeName);
+    var value = modelClass[attributeName];
+    Ember.assert("Couldn't get " + attributeName + " from " + typeName, !Ember.isBlank(value));
+    var klass = store.container.lookupFactory(value);
+    Ember.assert("Couldn't get " + attributeName + " instance from " + typeName, !Ember.isBlank(klass));
+    return klass.create(attributes);
+}
 
 export default Store;
