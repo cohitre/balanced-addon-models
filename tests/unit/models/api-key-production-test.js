@@ -14,12 +14,12 @@ moduleFor("balanced-addon-models@model:api-key-production", "model - ApiKey", {
 test("#adapter", MH.shouldUseBalancedApiAdapter("balanced-addon-models@adapter:balanced-api-base"));
 test("#serializer", MH.shouldUseBalancedApiSerializer());
 
-test("type validations", function() {
+test("businessType validations", function() {
   var self = this;
   var t = function(value, expectation) {
     var s = self.subject();
-    s.set("type", value);
-    deepEqual(s.errors.type, expectation);
+    s.set("businessType", value);
+    deepEqual(s.errors.businessType, expectation);
   };
 
   t(null, [
@@ -27,7 +27,7 @@ test("type validations", function() {
     "is not included in the list"
   ]);
   t("ccccc", ["is not included in the list"]);
-  t("business", []);
+  t("llc", []);
   t("person", []);
 });
 
@@ -41,12 +41,12 @@ test("businessTaxId validations", function() {
     deepEqual(s.errors.businessTaxId, expectation);
   };
 
-  s.set("type", "business");
+  s.set("businessType", "llc");
   t(null, ["can't be blank", "is too short (minimum is 4 characters)"]);
   t("", ["can't be blank", "is too short (minimum is 4 characters)"]);
   t("xx", ["is too short (minimum is 4 characters)"]);
   t("xxxxxxxxxxxxxxxxxxxxxxxxxx", []);
-  s.set("type", "person");
+  s.set("businessType", "person");
   t(null, []);
 });
 
@@ -58,13 +58,13 @@ test("personSsnLast4 validations", function() {
     deepEqual(s.errors.personSsnLast4, expectation);
   };
 
-  s.set("type", "business");
+  s.set("businessType", "llc");
   t(null, ["can't be blank", "is the wrong length (should be 4 characters)", "must be digits only"]);
   t("", ["can't be blank", "is the wrong length (should be 4 characters)", "must be digits only"]);
   t("xx", ["is the wrong length (should be 4 characters)", "must be digits only"]);
   t("1234", []);
   t("xxxxxxxxxxxxxxxxxxxxxxxxxx", ["is the wrong length (should be 4 characters)", "must be digits only"]);
-  s.set("type", "person");
+  s.set("businessType", "person");
   t(null, ["can't be blank", "is the wrong length (should be 4 characters)", "must be digits only"]);
   t("1234", []);
 });
@@ -76,7 +76,7 @@ test("personDateOfBirth", function() {
     deepEqual(s.errors.personDateOfBirth, expectation);
   };
 
-  s.set("type", "business");
+  s.set("businessType", "llc");
   t(null, ["can't be blank", "invalid date format"]);
   t("12 / 1000", ["invalid year 1000"]);
   t("12 / 1799", ["invalid year 1799"]);
@@ -93,7 +93,10 @@ test("personPhoneNumber", function() {
     deepEqual(s.errors.personPhoneNumber, expectation);
   };
 
-  t(null, ["can't be blank"]);
+  s.set("businessType", "llc");
+  t(undefined, undefined);
+  s.set("businessType", "person");
+  t("", ["can't be blank"]);
   t("1111111111111111111111111111111111", ["is too long (maximum is 15 characters)"]);
   t("123 333 4444", []);
   t("333 4444 ext1", ['has invalid characters (only "+", "-", "(", ")" spaces and numbers are accepted)']);
@@ -101,41 +104,35 @@ test("personPhoneNumber", function() {
 
 test("#type", function() {
   var subject = this.subject();
-  deepEqual(subject.get("type"), "person");
-
-  subject.set("type", "business");
   deepEqual(subject.get("type"), "business");
 
-  subject.set("type", "person");
+  subject.set("businessType", "person");
   deepEqual(subject.get("type"), "person");
+
+  subject.set("businessType", "llc");
+  deepEqual(subject.get("type"), "business");
 });
 
 test("#isPerson", function() {
   var subject = this.subject();
-  deepEqual(subject.get("isPerson"), true);
-
-  subject.set("type", "business");
   deepEqual(subject.get("isPerson"), false);
 
-  subject.set("type", "person");
+  subject.set("businessType", "person");
   deepEqual(subject.get("isPerson"), true);
 });
 
 test("#isBusiness", function() {
   var subject = this.subject();
-  deepEqual(subject.get("isBusiness"), false);
-
-  subject.set("type", "business");
   deepEqual(subject.get("isBusiness"), true);
 
-  subject.set("type", "person");
+  subject.set("businessType", "person");
   deepEqual(subject.get("isBusiness"), false);
 });
 
 test("#getApiProperties", function() {
   var subject = this.subject();
   subject.setProperties({
-    type: "person",
+    businessType: "person",
 
     personDateOfBirth: "10 / 2000",
     personFullName: "Tom Person",
@@ -164,7 +161,7 @@ test("#getApiProperties", function() {
     }
   });
 
-  subject.set("type", "business");
+  subject.set("businessType", "llc");
 
   deepEqual(subject.getApiProperties(), {
     merchant: {
@@ -196,11 +193,11 @@ function mustBePresentIfBusiness(field) {
       deepEqual(s.errors[field], expectation);
     };
 
-    s.set("type", "business");
+    s.set("businessType", "s-corp");
     t(null, ["can't be blank"]);
     t("", ["can't be blank"]);
     t("some name", []);
-    s.set("type", "person");
+    s.set("businessType", "person");
     t(null, []);
   };
 }
@@ -213,11 +210,11 @@ function mustBePresent(field) {
       deepEqual(s.errors[field], expectation);
     };
 
-    s.set("type", "business");
+    s.set("businessType", "s-corp");
     t(null, ["can't be blank"]);
     t("", ["can't be blank"]);
     t("some name", []);
-    s.set("type", "person");
+    s.set("businessType", "person");
     t(null, ["can't be blank"]);
     t("", ["can't be blank"]);
     t("some name", []);

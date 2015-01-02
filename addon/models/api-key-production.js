@@ -5,11 +5,11 @@ import ApiKeyProductionErrorsHandler from "./error-handlers/api-key-production";
 import ApiKeyMerchantPropertiesCreator from "./support/api-key-merchant-properties-creator";
 import VH from "../utils/validation-helpers";
 
-var VALID_TYPE_VALUES = ["business", "person"];
+var VALID_TYPE_VALUES = ["llc", "scorp", "ccorp", "partnership", "sole_proprietorship", "person"];
 
 var ApiKeyProduction = ApiKey.extend({
   validations: {
-    type: {
+    businessType: {
       presence: true,
       inclusion: {
         "in": VALID_TYPE_VALUES
@@ -90,24 +90,17 @@ var ApiKeyProduction = ApiKey.extend({
       model: this
     });
   },
-  type: "person",
 
   isPerson: Ember.computed.equal("type", "person").readOnly(),
   isBusiness: Ember.computed.equal("type", "business").readOnly(),
 
+  type: Ember.computed("businessType", function() {
+    return (this.get("businessType") === "person") ?
+      "person" :
+      "business";
+  }).readOnly(),
   marketplaceCategory: "crowdfunding",
-
-  businessType: Ember.computed(function(attr, value) {
-    if (arguments.length > 1) {
-      if (value === "person") {
-        this.set("type", "person");
-      }
-      else {
-        this.set("type", "business");
-      }
-    }
-    return value;
-  }),
+  businessType: "llc",
 
   getApiProperties: function() {
     return getApiKeyPropertiesCreator(this).getApiProperties();
