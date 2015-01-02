@@ -137,7 +137,9 @@ var ApiKeyProduction = ApiKey.extend({
   },
 
   formattedIncorporationDate: generateFormattedDate("businessIncorporationDate"),
-  formattedPersonDateOfBirth: generateFormattedDate("personDateOfBirth")
+  formattedPersonDateOfBirth: generateFormattedDate("personDateOfBirth"),
+
+  isProduction: true,
 });
 
 function generateFormattedDate(propName) {

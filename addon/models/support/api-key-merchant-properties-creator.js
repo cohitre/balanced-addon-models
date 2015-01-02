@@ -1,6 +1,5 @@
 import Ember from "ember";
 
-var IS_PRODUCTION = false;
 var ApiKeyMerchantPropertiesCreator = Ember.Object.extend({
   getApiProperties: function() {
     var model = this.get("model");
@@ -18,7 +17,7 @@ var ApiKeyMerchantPropertiesCreator = Ember.Object.extend({
 
     return {
       type: "business",
-      production: IS_PRODUCTION,
+      production: model.get("isProduction"),
 
       name: model.get("businessName"),
       tax_id: model.get("businessTaxId"),
@@ -36,7 +35,7 @@ var ApiKeyMerchantPropertiesCreator = Ember.Object.extend({
 
     var defaults = {
       type: "person",
-      production: IS_PRODUCTION,
+      production: model.get("isProduction"),
     };
     return Ember.merge(defaults, this.getPersonAttributes(model));
   },

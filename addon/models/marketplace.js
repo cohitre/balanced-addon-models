@@ -56,6 +56,7 @@ var Marketplace = Model.extend({
   fetchLogs: BK.fetchCollectionForUri("log", "/logs"),
 
   createUri: "/marketplaces",
+
   getApiProperties: function() {
     return {
       name: this.get("name"),
