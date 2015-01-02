@@ -22,7 +22,6 @@ var MarketplaceApplication = Model.extend({
       api_key: apiKey.get("secret"),
       business_type: apiKey.get("type"),
       full_name: apiKey.get("personFullName"),
-      merchant_uri: apiKey.get("href"),
       street_address: apiKey.get("personAddressPostalCode"),
       postal_code: apiKey.get("personAddressPostalCode"),
     });
@@ -38,6 +37,7 @@ var MarketplaceApplication = Model.extend({
 
   ingestMarketplace: function(marketplace) {
     this.setProperties({
+      merchant_uri: marketplace.get("href"),
       marketplace_name: marketplace.get("name"),
       owner_phone_number: marketplace.get("supportPhoneNumber"),
       support_email: marketplace.get("supportEmailAddress"),
@@ -48,7 +48,7 @@ var MarketplaceApplication = Model.extend({
   },
 
   getApiProperties: function() {
-    var properties =  this.getProperties(
+    return this.getProperties(
       "marketplace_name",
       "business_type",
       "full_name",
@@ -64,7 +64,25 @@ var MarketplaceApplication = Model.extend({
       "current_monthly_volume",
       "api_key"
     );
-    return properties;
+  },
+
+  getDebuggingProperties: function() {
+    return this.getProperties(
+      "id",
+      "marketplace_name",
+      "business_type",
+      "full_name",
+      "owner_email",
+      "owner_phone_number",
+      "merchant_uri",
+      "domain_url",
+      "support_email",
+      "support_phone_number",
+      "postal_code",
+      "street_address",
+      "current_processor",
+      "current_monthly_volume"
+    );
   },
 
   getErrorsHandler: function() {

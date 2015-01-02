@@ -2,7 +2,6 @@ import Ember from "ember";
 
 export default Ember.ArrayProxy.extend({
   isLoaded: false,
-  isLoadingNextPage: false,
 
   nextUri: Ember.computed.reads("meta.next"),
   totalCount: Ember.computed.reads("meta.total"),
@@ -11,15 +10,24 @@ export default Ember.ArrayProxy.extend({
     return !Ember.isBlank(this.get("nextUri"));
   }),
 
-  ingestResponse: function(items, meta) {
-    this.set("meta", meta);
-    this.pushObjects(items);
-    this.set("isLoaded", true);
-    return items;
+  loadUri: function(uri) {
+    return this.loadUris([uri]);
   },
 
-  loadUri: function(uri) {
-    return this.get("store").loadIntoCollection(this.modelType, this, uri);
+  loadUris: function(uris) {
+    var self = this;
+    var promises = Ember.A(uris).map(function(uri) {
+      return this.get("store").loadIntoCollection(this.modelType, this, uri);
+    }, this);
+    self.set("isLoaded", false);
+    return Ember.RSVP.all(promises)
+      .then(function() {
+        self.set("isLoaded", true);
+        return self;
+      }, function() {
+        self.set("isLoaded", true);
+        return Ember.RSVP.reject(self);
+      });
   },
 
   loadNext: function() {

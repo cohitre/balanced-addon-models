@@ -30,17 +30,6 @@ test("#hasNextPage", function() {
   deepEqual(subject.get("hasNextPage"), false);
 });
 
-test("#ingestResponse", function() {
-  var items = [1, 2, 3];
-  var subject = this.subject();
-  subject.setProperties({
-    content: [4]
-  });
-  subject.ingestResponse(items, [3, 4, 2]);
-  deepEqual(subject.get("content"), [4, 1, 2, 3]);
-  deepEqual(subject.get("meta"), [3, 4, 2]);
-});
-
 test("#loadUri", function(uri) {
   var store = buildStubbedStore();
   var subject = this.subject();

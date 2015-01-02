@@ -1,3 +1,4 @@
+import Ember from "ember";
 import Model from "./core/model";
 import BK from "./core/method-generators";
 import VH from "../utils/validation-helpers";
@@ -62,6 +63,12 @@ var Marketplace = Model.extend({
       support_email_address: this.get("supportEmailAddress"),
       support_phone_number: this.get("supportPhoneNumber"),
     };
+  },
+
+  getDebuggingProperties: function() {
+    return Ember.merge(this.getApiProperties(), {
+      id: this.get("id")
+    });
   },
 });
 

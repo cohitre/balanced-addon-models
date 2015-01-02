@@ -113,6 +113,29 @@ var ApiKeyProduction = ApiKey.extend({
     return getApiKeyPropertiesCreator(this).getApiProperties();
   },
 
+  getDebuggingProperties: function() {
+    return this.getProperties(
+      "id",
+      "isPerson",
+      "isBusiness",
+      "marketplaceCategory",
+      "type",
+      "businessIncorporationDate",
+      "personDateOfBirth",
+
+      "businessName",
+      "businessAddressLine1",
+      "businessAddressPostalCode",
+      "businessPhoneNumber",
+      "formattedIncorporationDate",
+
+      "personFullName",
+      "formattedPersonDateOfBirth",
+      "personAddressPostalCode",
+      "personPhoneNumber"
+    );
+  },
+
   formattedIncorporationDate: generateFormattedDate("businessIncorporationDate"),
   formattedPersonDateOfBirth: generateFormattedDate("personDateOfBirth")
 });

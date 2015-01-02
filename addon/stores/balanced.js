@@ -67,14 +67,15 @@ var Store = Ember.Object.extend({
 
   fetchCollection: function(typeName, uri, attributes) {
     var collection = this.collectionFor(typeName);
-
     return this.loadIntoCollection(typeName, collection, uri, attributes);
   },
 
   getCollection: function(typeName, uri, attributes) {
     var collection = this.collectionFor(typeName);
-
-    this.loadIntoCollection(typeName, collection, uri, attributes);
+    this.loadIntoCollection(typeName, collection, uri, attributes)
+      .finally(function() {
+        collection.set("isLoaded", true);
+      });
     return collection;
   },
 
@@ -91,7 +92,8 @@ var Store = Ember.Object.extend({
         var items = Ember.A(collectionResponse.items).map(function(item) {
           return self.build(item._type || typeName, item);
         });
-        collection.ingestResponse(items, collectionResponse.meta);
+        collection.set("meta", collectionResponse.meta);
+        collection.pushObjects(items);
         return collection;
       });
   },
