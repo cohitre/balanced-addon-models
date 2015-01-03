@@ -68,7 +68,7 @@ test("#supportPhoneNumber validations", function() {
   t("", ["can't be blank"]);
   t("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", [
     "is too long (maximum is 15 characters)",
-    "has invalid characters (only \"+\", \"-\", \"(\", \")\" spaces and numbers are accepted)"
+    'has invalid character "x" (only "+", "-", "(", ")" spaces and numbers are accepted)'
   ]);
   t("778 999 33333", []);
 });

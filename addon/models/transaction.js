@@ -45,21 +45,6 @@ var Transaction = Model.extend({
   is_succeeded: isStatus('succeeded')
 });
 
-Transaction.reopenClass({
-  adapterName: "balanced-addon-models@adapter:balanced-api",
-  findAppearsOnStatementAsInvalidCharacters: function(originalString) {
-    // ASCII letters (a-z and A-Z)
-    // Digits (0-9)
-    // Special characters (.<>(){}[]+&!$;-%_?:#@~=\'" ^`|)
-    var SPECIAL_CHARS_REGEXP = /[.<>(){}\[\]+&!$;\-%_?:#@~=\\'" \^`|\w]/g;
-    return originalString
-      .replace(SPECIAL_CHARS_REGEXP, '')
-      .split("")
-      .uniq()
-      .join("");
-  }
-});
-
 function isStatus(status) {
   return Ember.computed.equal('status', status);
 }

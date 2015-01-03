@@ -99,7 +99,7 @@ test("personPhoneNumber", function() {
   t("", ["can't be blank"]);
   t("1111111111111111111111111111111111", ["is too long (maximum is 15 characters)"]);
   t("123 333 4444", []);
-  t("333 4444 ext1", ['has invalid characters (only "+", "-", "(", ")" spaces and numbers are accepted)']);
+  t("333 4444 ext1", ['has invalid character "e" (only "+", "-", "(", ")" spaces and numbers are accepted)']);
 });
 
 test("#type", function() {
