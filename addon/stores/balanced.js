@@ -121,12 +121,14 @@ var Store = Ember.Object.extend({
 });
 
 function buildRelatedInstance(store, typeName, attributeName, attributes) {
-    var modelClass = store.modelFor(typeName);
-    var value = modelClass[attributeName];
-    Ember.assert("Couldn't get " + attributeName + " from " + typeName, !Ember.isBlank(value));
-    var klass = store.container.lookupFactory(value);
-    Ember.assert("Couldn't get " + attributeName + " instance from " + typeName, !Ember.isBlank(klass));
-    return klass.create(attributes);
+  var modelClass = store.modelFor(typeName);
+  var value = modelClass[attributeName];
+
+  Ember.assert("Couldn't get " + attributeName + " from " + typeName, !Ember.isBlank(value));
+
+  var klass = store.container.lookupFactory(value);
+  Ember.assert("Couldn't get " + attributeName + " instance from " + typeName, !Ember.isBlank(klass));
+  return klass.create(attributes);
 }
 
 export default Store;

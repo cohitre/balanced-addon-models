@@ -27,7 +27,9 @@ var Marketplace = Model.extend({
         maximum: 15
       },
       inline: EmberValidations.validator(function() {
-        return VH.validatePhoneFormat(this.get("supportPhoneNumber"), !this.get("isTest"));
+        if (!this.get("isTest")) {
+          return VH.validatePhoneFormat(this.get("supportPhoneNumber"));
+        }
       })
     }
   },

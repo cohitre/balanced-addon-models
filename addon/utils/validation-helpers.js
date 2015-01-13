@@ -7,30 +7,25 @@ var PHONE_NUMBER_INVALID_CHARACTERS = /[^\d- () +]/g;
 var ValidationHelpers = {
   VALID_DATE_FORMAT: VALID_DATE_FORMAT,
 
-  validateAppearsOnStatementAsFormat: function(string, condition) {
-    if (condition) {
-      var match = (string||"").match(INVALID_APPEARS_ON_STATEMENT_AS_CHARACTERS);
-      if (match) {
-        return 'has invalid character "' + match[0] + '"';
-      }
+  validateAppearsOnStatementAsFormat: function(string) {
+    var match = (string||"").match(INVALID_APPEARS_ON_STATEMENT_AS_CHARACTERS);
+    if (match) {
+      return 'has invalid character "' + match[0] + '"';
     }
   },
 
-  validatePhoneFormat: function (number, condition) {
-    if (!condition) {
-      return;
-    }
+  validateAppearsOnStatementAsLength: function(string, length) {
+    return string + length;
+  },
+
+  validatePhoneFormat: function (number) {
     var match = (number||"").match(PHONE_NUMBER_INVALID_CHARACTERS);
     if (match) {
       return 'has invalid character "' + match[0] + '" (only "+", "-", "(", ")" spaces and numbers are accepted)';
     }
   },
 
-  validateDateFormat: function(date, condition) {
-    if (!condition) {
-      return;
-    }
-
+  validateDateFormat: function(date) {
     var match, month, year;
     date = date || "";
     match = date.match(VALID_DATE_FORMAT);

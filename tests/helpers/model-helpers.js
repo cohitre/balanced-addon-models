@@ -21,7 +21,28 @@ var ModelHelpers = {
       var adapterName = this.subject().constructor.serializerName;
       deepEqual(adapterName, expectation);
     };
-  }
+  },
+
+  shouldHaveAmountValidations: function(fieldName) {
+    var MH = this;
+    fieldName = fieldName || "amount";
+    return function() {
+      var s = this.subject();
+      var t = MH.generateErrorTester(s, fieldName);
+
+      t(null, [ "can't be blank", "is not a number"]);
+      t(10, []);
+      t(-100, ["must be greater than or equal to 0"]);
+      t(10.20, ["must be an integer"]);
+    };
+  },
+
+  generateErrorTester: function(subject, fieldName) {
+    return function(value, expectation) {
+      subject.set(fieldName, value);
+      deepEqual(subject.get("errors." + fieldName), expectation);
+    };
+  },
 };
 
 export default ModelHelpers;

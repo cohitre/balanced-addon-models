@@ -97,7 +97,7 @@ test("#handleUnknownError", function() {
   s.handleUnknownError();
 
   deepEqual(model.get("errors"), {
-    "_root": ["There was an error processing your request."]
+    "_root": ["There was an error processing your request"]
   });
 });
 
@@ -143,6 +143,6 @@ test("#populateFromResponse (unknown)", function() {
   s.populateFromResponse(ERROR_RESPONSE);
 
   deepEqual(model.get("errors"), {
-    "_root": ["There was an error processing your request."]
+    "_root": ["There was an error processing your request"]
   });
 });

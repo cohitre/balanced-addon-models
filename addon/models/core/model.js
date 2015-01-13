@@ -21,20 +21,6 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
 	isDeleted: false,
 	isNew: true,
 
-	id: Ember.computed.or('__json.id', '_id'),
-
-	// computes the ID from the URI - exists because at times Ember needs the
-	// ID of our model before it has finished loading. This gets overridden
-	// when the real model object gets loaded by the ID value from the JSON
-	// attribute
-	_id: function() {
-		var uri = this.get('uri');
-
-		if (uri) {
-			return uri.substring(uri.lastIndexOf('/') + 1);
-		}
-	}.property('uri'),
-
   updateUri: Ember.computed.reads("href").readOnly(),
 
   clearErrors: function() {
@@ -45,6 +31,7 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
       }
     }
   },
+
 	save: function() {
     var self = this;
     this.clearErrors();
@@ -121,6 +108,7 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
   },
 
 	ingestJsonItem: function(json) {
+    json = json || {};
     this.setProperties(json);
     this.set("isLoaded", true);
     return this;

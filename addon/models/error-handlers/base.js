@@ -37,8 +37,12 @@ var BaseErrorsHandler = Ember.Object.extend({
     }
   },
 
-  handleUnknownError: function() {
-    this.addRootError("There was an error processing your request.");
+  handleUnknownError: function(error) {
+    var message = "There was an error processing your request";
+    if (error && error.message) {
+      message = error.message;
+    }
+    this.addRootError(message);
   },
 
   populateFromResponse: function(response) {
@@ -47,7 +51,7 @@ var BaseErrorsHandler = Ember.Object.extend({
       this.handleApiResponse(response);
     }
     else {
-      this.handleUnknownError();
+      this.handleUnknownError(response);
     }
   }
 });

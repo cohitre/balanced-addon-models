@@ -38,29 +38,8 @@ var BankAccount = FundingInstrument.extend({
     );
   },
 
-  createInstance: function() {
-    var deferred = Ember.RSVP.defer();
-    window.balanced.bankAccount.create(this.getApiProperties(), function(response) {
-      if (Ember.isBlank(response.errors)) {
-        deferred.resolve(response);
-      }
-      else {
-        deferred.reject(response);
-      }
-    });
-    return deferred.promise;
-  },
-
-  linkToCustomer: function(customer) {
-    var self = this;
-    var customerUri;
-    if (Ember.typeOf(customer) === "string") {
-      customerUri = customer;
-    }
-
-    return self.updateProperties({
-      customer: customerUri
-    });
+  getBalancedJsModel: function() {
+    return window.balanced.bankAccount;
   },
 });
 

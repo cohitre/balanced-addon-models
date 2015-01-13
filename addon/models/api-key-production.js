@@ -38,7 +38,9 @@ var ApiKeyProduction = ApiKey.extend({
         "if": "isBusiness"
       },
       inline: EmberValidations.validator(function() {
-        return VH.validatePhoneFormat(this.get("businessPhoneNumber"), this.get("isBusiness"));
+        if (this.get("isBusiness")) {
+          return VH.validatePhoneFormat(this.get("businessPhoneNumber"));
+        }
       })
     },
     businessAddressLine1: {
@@ -51,7 +53,9 @@ var ApiKeyProduction = ApiKey.extend({
         "if": "isBusiness"
       },
       inline: EmberValidations.validator(function() {
-        return VH.validateDateFormat(this.get("businessIncorporationDate"), this.get("isBusiness"));
+        if (this.get("isBusiness")) {
+          return VH.validateDateFormat(this.get("businessIncorporationDate"));
+        }
       })
     },
     personFullName: {
@@ -68,7 +72,7 @@ var ApiKeyProduction = ApiKey.extend({
     personDateOfBirth: {
       presence: true,
       inline: EmberValidations.validator(function() {
-        return VH.validateDateFormat(this.get("personDateOfBirth"), true);
+        return VH.validateDateFormat(this.get("personDateOfBirth"));
       })
     },
     personPhoneNumber: {
@@ -80,7 +84,7 @@ var ApiKeyProduction = ApiKey.extend({
         "if": "isPerson"
       },
       inline: EmberValidations.validator(function() {
-        return VH.validatePhoneFormat(this.get("personPhoneNumber"), this.get("isPerson"));
+        return VH.validatePhoneFormat(this.get("personPhoneNumber"));
       })
     }
   },
