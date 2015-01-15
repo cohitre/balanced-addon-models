@@ -3,7 +3,7 @@ import { test, moduleFor } from 'ember-qunit';
 
 moduleFor("balanced-addon-models@adapter:balanced-api-base", "adapter - BalancedApiBaseAdapter");
 
-test("default", function() {
+test("default properties", function() {
   var subject = this.subject();
   var properties = subject.getProperties("host", "accepts", "contentType");
 

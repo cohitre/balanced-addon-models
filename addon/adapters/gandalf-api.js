@@ -2,7 +2,7 @@
 import BalancedApiBaseAdapter from "./balanced-api-base";
 
 var GandalfApiAdapter = BalancedApiBaseAdapter.extend({
-  host: "http://localhost:8111",
+  host: "http://gandalf-prod-9mypyuyzhc.elasticbeanstalk.com",
 });
 
 export default GandalfApiAdapter;

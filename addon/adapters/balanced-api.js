@@ -10,13 +10,13 @@ var BalancedApiAdapter = BalancedApiBaseAdapter.extend({
   },
   contentType: 'application/json; charset=UTF-8',
 
-  headers: Ember.computed(function() {
+  headers: Ember.computed("encodedApiKey", function() {
     return {
       Authorization: this.get("encodedApiKey"),
     };
-  }).property("encodedApiKey"),
+  }).readOnly(),
 
-  encodedApiKey: Ember.computed(function() {
+  encodedApiKey: Ember.computed("api_key", function() {
     var apiKey = this.get("api_key");
     if (Ember.isBlank(apiKey)) {
       return null;
@@ -24,7 +24,7 @@ var BalancedApiAdapter = BalancedApiBaseAdapter.extend({
     else {
       return 'Basic ' + window.btoa(apiKey + ':');
     }
-  }).property("api_key"),
+  }).readOnly(),
 });
 
 export default BalancedApiAdapter;

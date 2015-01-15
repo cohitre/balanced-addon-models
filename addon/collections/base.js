@@ -6,7 +6,7 @@ export default Ember.ArrayProxy.extend({
   nextUri: Ember.computed.reads("meta.next"),
   totalCount: Ember.computed.reads("meta.total"),
 
-  hasNextPage: Ember.computed("meta", function() {
+  hasNextPage: Ember.computed("nextUri", function() {
     return !Ember.isBlank(this.get("nextUri"));
   }),
 

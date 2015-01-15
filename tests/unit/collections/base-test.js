@@ -43,6 +43,29 @@ test("#loadUri", function(uri) {
   deepEqual(store.loadIntoCollection.args, [["customer", subject, "/customers"]]);
 });
 
+test("#loadUris", function() {
+  var store = buildStubbedStore();
+  var s = this.subject();
+
+  s.setProperties({
+    store: store,
+    modelType: "marketplace",
+    content: [],
+    nextUri: "/marketplaces"
+  });
+
+  deepEqual(s.get("isLoaded"), false);
+
+  s.loadUris(["/uri1", "/uri2"])
+    .then(function() {
+      deepEqual(s.get("isLoaded"), true);
+      deepEqual(store.loadIntoCollection.args, [
+        ["marketplace", s, "/uri1"],
+        ["marketplace", s, "/uri2"]
+      ]);
+    });
+});
+
 test("#loadNext", function() {
   var store = buildStubbedStore();
 

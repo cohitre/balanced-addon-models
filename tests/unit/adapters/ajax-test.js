@@ -3,6 +3,13 @@ import { test, moduleFor } from 'ember-qunit';
 
 moduleFor("balanced-addon-models@adapter:ajax", "adapter - Ajax");
 
+test("#_uri", function() {
+  var s = this.subject();
+
+  s.set("host", "http://some-host");
+  deepEqual(s._uri("/some-path"), "http://some-host/some-path");
+});
+
 test("#ajax", function() {
   var stub = sinon.stub(jQuery, "ajax").returns(Ember.RSVP.resolve({}));
 

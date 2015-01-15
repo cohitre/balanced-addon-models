@@ -9,11 +9,11 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
     });
   },
   getAdapter: function() {
-    return this.store.adapterFor(this.constructor);
+    return this.get("store").adapterFor(this.constructor);
   },
 
   getSerializer: function() {
-    return this.store.serializerFor(this.constructor);
+    return this.get("store").serializerFor(this.constructor);
   },
 
 	isLoaded: false,
@@ -45,7 +45,8 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
       return Ember.RSVP.reject(self);
     };
 
-    return this.validate()
+    return this
+      .validate()
       .then(function() {
         if (self.get("isNew")) {
           return self.createInstance();
@@ -58,11 +59,23 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
 	},
 
   createInstance: function() {
-    return this.getAdapter().post(this.get("createUri"), {
-      data: this.getApiProperties()
-    });
+    return this.getAdapter()
+      .post(this.get("createUri"), {
+        data: this.getApiProperties()
+      });
   },
 
+  updateInstance: function() {
+    return this.getAdapter()
+      .update(this.get("updateUri"), {
+        data: this.getApiProperties()
+      });
+  },
+
+
+  /**
+   * Quick method that updates only certain properties
+   */
   updateProperties: function(data) {
     var self = this;
     var href = this.get("updateUri");
@@ -79,14 +92,6 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
         errorsHandler.populateFromResponse(response);
         return Ember.RSVP.reject(self);
       });
-  },
-
-  updateInstance: function() {
-    return this.getAdapter().update(this.get("updateUri"), {
-      data: this.getApiProperties()
-    }).then(function(response) {
-      return response.responseJSON;
-    });
   },
 
   getApiProperties: function() {

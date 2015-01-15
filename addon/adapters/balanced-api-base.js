@@ -9,7 +9,7 @@ var BalancedApiBaseAdapter = AjaxAdapter.extend({
   },
   headers: Ember.computed(function() {
     return {};
-  })
+  }).readOnly()
 });
 
 export default BalancedApiBaseAdapter;
