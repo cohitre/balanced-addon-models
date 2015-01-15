@@ -26,7 +26,7 @@ var BankAccount = FundingInstrument.extend({
     else {
       return null;
     }
-  }),
+  }).readOnly(),
 
   getApiProperties: function() {
     return this.getProperties(
