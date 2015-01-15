@@ -66,6 +66,33 @@ test("#loadUris", function() {
     });
 });
 
+test("#loadUris (error)", function() {
+  var store = {
+    loadIntoCollection: sinon.stub()
+  };
+  store.loadIntoCollection.onCall(0).returns(Ember.RSVP.resolve({}));
+  store.loadIntoCollection.onCall(1).returns(Ember.RSVP.reject({}));
+  var s = this.subject();
+
+  s.setProperties({
+    store: store,
+    modelType: "marketplace",
+    content: [],
+    nextUri: "/marketplaces"
+  });
+
+  deepEqual(s.get("isLoaded"), false);
+
+  s.loadUris(["/uri1", "/uri2"])
+    .then(undefined, function() {
+      deepEqual(s.get("isLoaded"), true);
+      deepEqual(store.loadIntoCollection.args, [
+        ["marketplace", s, "/uri1"],
+        ["marketplace", s, "/uri2"]
+      ]);
+    });
+});
+
 test("#loadNext", function() {
   var store = buildStubbedStore();
 

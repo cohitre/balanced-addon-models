@@ -3,47 +3,20 @@ import { test, moduleFor } from 'ember-qunit';
 
 moduleFor("balanced-addon-models@adapter:base", "adapter - Base");
 
-test("#fetch", function() {
-  var message = "Assertion Failed: Your adapter should override #fetch";
-  var subject = this.subject();
+test("#fetch", shouldThrowError("fetch"));
+test("#create", shouldThrowError("create"));
+test("#update", shouldThrowError("update"));
+test("#del", shouldThrowError("del"));
 
-  shouldThrowError(message, function() {
-    subject.fetch("/marketplaces");
-  });
-});
-
-test("#create", function() {
-  var message = "Assertion Failed: Your adapter should override #create";
-  var subject = this.subject();
-
-  shouldThrowError(message, function() {
-    subject.create("/marketplaces");
-  });
-});
-
-test("#update", function() {
-  var message = "Assertion Failed: Your adapter should override #update";
-  var subject = this.subject();
-
-  shouldThrowError(message, function() {
-    subject.update("/marketplaces");
-  });
-});
-
-test("#del", function() {
-  var message = "Assertion Failed: Your adapter should override #del";
-  var subject = this.subject();
-
-  shouldThrowError(message, function() {
-    subject.del("/marketplaces");
-  });
-});
-
-function shouldThrowError(message, callback) {
-  try {
-    callback();
-  }
-  catch (e) {
-    deepEqual(e.message, message);
-  }
+function shouldThrowError(method) {
+  return function() {
+    var message = "Assertion Failed: Your adapter should override #" + method;
+    try {
+      var s = this.subject();
+      s[method]();
+    }
+    catch (e) {
+      deepEqual(e.message, message);
+    }
+  };
 }
