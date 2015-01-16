@@ -5,7 +5,7 @@ var ApiKey = Model.extend({
 });
 
 ApiKey.reopenClass({
-  adapterName: "balanced-addon-models@adapter:balanced-api-base",
+  adapterName: "balanced-addon-models@adapter:balanced-api",
 });
 
 export default ApiKey;
