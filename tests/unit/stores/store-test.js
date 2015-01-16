@@ -81,11 +81,3 @@ test("#collectionFor", function() {
     ["balanced-addon-models@collection:customer"]
   ]);
 });
-
-test("#processResponse", function() {
-  var subject = this.subject();
-
-  var result = subject.processResponse({ items: [] });
-  deepEqual(result, []);
-});
-

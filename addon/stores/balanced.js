@@ -48,6 +48,12 @@ var Store = Ember.Object.extend({
     });
   },
 
+  load: function(typeName, attributes) {
+    var model = this.build(typeName, attributes);
+    model.set("isNew", false);
+    return model;
+  },
+
   build: function(typeName, attributes) {
     var model = this.modelFor(typeName).create();
     model.ingestJsonItem(attributes);
@@ -84,7 +90,7 @@ var Store = Ember.Object.extend({
       })
       .then(function(collectionResponse) {
         var items = Ember.A(collectionResponse.items).map(function(item) {
-          return self.build(item._type || typeName, item);
+          return self.load(item._type || typeName, item);
         });
         collection.set("meta", collectionResponse.meta);
         collection.pushObjects(items);
@@ -102,7 +108,7 @@ var Store = Ember.Object.extend({
         return serializer.extractSingle(response);
       })
       .then(function(item) {
-        return self.build(item._type || typeName, item);
+        return self.load(item._type || typeName, item);
       });
   },
 

@@ -61,9 +61,7 @@ test("#save", function() {
       balanced.response = responses.card.success;
       return s.save(card, debit);
     })
-    .then(function() {
-      console.log("succss");
-    }, function(e) {
+    .then(undefined, function(e) {
       deepEqual(card.get("errors._root"), []);
       deepEqual(debit.get("errors._root"), []);
     });

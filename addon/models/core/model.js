@@ -35,13 +35,16 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
 	save: function() {
     var self = this;
     this.clearErrors();
+    this.set("isSaving", true);
     var successHandler = function(response) {
       var item = self.getSerializer().extractSingle(response);
+      self.set("isSaving", false);
       return self.ingestJsonItem(item);
     };
     var errorHandler = function(response) {
       var errorsHandler = self.getErrorsHandler();
       errorsHandler.populateFromResponse(response);
+      self.set("isSaving", false);
       return Ember.RSVP.reject(self);
     };
 
@@ -59,9 +62,14 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
 	},
 
   createInstance: function() {
+    var self = this;
     return this.getAdapter()
       .post(this.get("createUri"), {
         data: this.getApiProperties()
+      })
+      .then(function(r) {
+        self.set("isNew", false);
+        return r;
       });
   },
 
