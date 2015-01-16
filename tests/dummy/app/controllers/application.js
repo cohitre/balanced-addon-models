@@ -1,7 +1,6 @@
 import Ember from "ember";
 
 export default Ember.Controller.extend({
-  apiKey: "ak-test-2JIos4zH4Ey3NKhqUJrXSGWxVcJPdN6Zn",
   actions: {
     submit: function(apiKey) {
       var store = this.container.lookup("store:balanced");
