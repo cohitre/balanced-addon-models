@@ -1,7 +1,7 @@
 /* globals blanket */
 
 blanket.options({
-   filter: "//..*(addon).*/",
+   filter: "//balanced-addon-models.*/",
    antifilter: "//.*(tests).*/",
    loaderExclusions: ["ember-data"]
 });
