@@ -12,11 +12,11 @@ var MarketplaceApplication = Model.extend({
     return "/applications/" + this.get("id") + "/";
   }),
 
+  createUri: "/applications/",
+
   isAccepted: Ember.computed.equal("status", "ACCEPTED").readOnly(),
   isPending: Ember.computed.equal("status", "PENDING").readOnly(),
   isRejected: Ember.computed.equal("status", "REJECTED").readOnly(),
-
-  createUri: "/applications",
   ingestApiKey: function(apiKey) {
     this.setProperties({
       api_key: apiKey.get("secret"),
