@@ -48,13 +48,6 @@ var Store = Ember.Object.extend({
     });
   },
 
-  processResponse: function(response) {
-    var self = this;
-    return Ember.A(response.items).map(function(item) {
-      return self.build(item._type, item);
-    });
-  },
-
   build: function(typeName, attributes) {
     var model = this.modelFor(typeName).create();
     model.ingestJsonItem(attributes);
@@ -108,7 +101,7 @@ var Store = Ember.Object.extend({
         return serializer.extractSingle(response);
       })
       .then(function(item) {
-        return self.build(typeName, item);
+        return self.build(item._type || typeName, item);
       });
   },
 
@@ -117,6 +110,23 @@ var Store = Ember.Object.extend({
     model.set("href", uri);
     model.reload();
     return model;
+  },
+
+  search: function(query, attributes) {
+    var searchCollection = this.container.lookup("balanced-addon-models@collection:search");
+    searchCollection.setProperties({
+      content: [],
+      modelType: "transaction",
+      container: this.container,
+      store: this,
+    });
+    var a = {
+      query: query
+    };
+    Ember.merge(a, attributes);
+    searchCollection.setProperties(a);
+    searchCollection.load();
+    return searchCollection;
   },
 });
 

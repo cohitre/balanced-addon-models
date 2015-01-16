@@ -10,7 +10,10 @@ var QueryStringCreator = Ember.Object.extend({
   },
 
   toQueryStringPair: function(key, value) {
-    if (Ember.isArray(value)) {
+    if (Ember.isBlank(value)) {
+      return this.serializeKeyValue(key, value);
+    }
+    else if (Ember.isArray(value)) {
       if (value.length === 1) {
         return this.serializeKeyValue(key, value[0]);
       }
@@ -39,7 +42,12 @@ var QueryStringCreator = Ember.Object.extend({
 QueryStringCreator.reopenClass({
   uri: function(uri, queryStringObject) {
     var creator = this.create();
-    return uri + "?" + creator.toQueryString(queryStringObject);
+    if (Ember.isBlank(queryStringObject)) {
+      return uri;
+    }
+    else {
+      return uri + "?" + creator.toQueryString(queryStringObject);
+    }
   },
 });
 

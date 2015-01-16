@@ -4,6 +4,14 @@ import QueryStringCreator from "balanced-addon-models/utils/query-string-creator
 
 module("util - QueryStringCreator");
 
+test("::uri", function() {
+  var r = QueryStringCreator.uri("http://example.com/path", {
+    name: "jim"
+  });
+
+  deepEqual(r, "http://example.com/path?name=jim");
+});
+
 test("#toQueryString", function() {
   var subject = QueryStringCreator.create();
   var result = subject.toQueryString({
