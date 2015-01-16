@@ -52,6 +52,7 @@ var Store = Ember.Object.extend({
     var model = this.modelFor(typeName).create();
     model.ingestJsonItem(attributes);
     model.setProperties({
+      __initializationAttributes: attributes,
       container: this.container,
       store: this
     });
