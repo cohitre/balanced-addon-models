@@ -67,7 +67,14 @@ var Store = Ember.Object.extend({
 
   fetchCollection: function(typeName, uri, attributes) {
     var collection = this.collectionFor(typeName);
-    return this.loadIntoCollection(typeName, collection, uri, attributes);
+    return this.loadIntoCollection(typeName, collection, uri, attributes)
+      .then(function(col) {
+        col.set("isLoaded", true);
+        return collection;
+      }, function(col) {
+        col.set("isLoaded", true);
+        return Ember.RSVP.reject(col);
+      });
   },
 
   getCollection: function(typeName, uri, attributes) {
