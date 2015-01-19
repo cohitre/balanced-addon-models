@@ -2,7 +2,7 @@ import Ember from "ember";
 import { test, moduleFor } from 'ember-qunit';
 import MH from "../../helpers/model-helpers";
 
-moduleFor("balanced-addon-models@model:api-key-production", "model - ApiKey", {
+moduleFor("balanced-addon-models@model:api-key-production", "model - ApiKeyProduction", {
   needs: [
     'ember-validations@validator:local/presence',
     'ember-validations@validator:local/inclusion',
@@ -11,7 +11,7 @@ moduleFor("balanced-addon-models@model:api-key-production", "model - ApiKey", {
   ]
 });
 
-test("#adapter", MH.shouldUseBalancedApiAdapter("balanced-addon-models@adapter:balanced-api-base"));
+test("#adapter", MH.shouldUseBalancedApiAdapter("balanced-addon-models@adapter:balanced-api"));
 test("#serializer", MH.shouldUseBalancedApiSerializer());
 
 test("businessType validations", function() {
