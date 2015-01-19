@@ -5,3 +5,4 @@ import MH from "../../helpers/model-helpers";
 moduleFor("balanced-addon-models@model:settlement", "model - Settlement");
 
 test("#adapter", MH.shouldUseBalancedApiAdapter());
+test("#serializer", MH.shouldUseBalancedApiSerializer());

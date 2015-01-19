@@ -4,6 +4,7 @@ import MH from "../../helpers/model-helpers";
 moduleFor("balanced-addon-models@model:bank-account-verification", "model - BankAccountVerification");
 
 test("#adapter", MH.shouldUseBalancedApiAdapter());
+test("#serializer", MH.shouldUseBalancedApiSerializer());
 
 test("#isVerified", stateTest("isVerified", "verified"));
 test("#isFailed", stateTest("isFailed", "failed"));

@@ -18,45 +18,47 @@ var Store = Ember.Object.extend({
   },
 
   modelFor: function(typeName) {
-    var modelPath = this.modelPathFor(typeName);
-    var model = this.container.lookupFactory(modelPath);
-    Ember.assert("Cannot find model " + modelPath + " for " + typeName, model);
+    var model;
+    if (Ember.typeOf(typeName) === "string") {
+      model = this.container.lookupFactory(this.modelPathFor(typeName));
+    }
+    else if (Ember.typeOf(typeName) === "class") {
+      model = typeName;
+    }
+    Ember.assert("Cannot find model for " + typeName, model);
     return model;
   },
 
   adapterFor: function(typeName) {
-    var modelClass = typeName;
-    if (Ember.typeOf(typeName) === "string") {
-      modelClass = this.modelFor(typeName);
-    }
-    else if (Ember.typeOf(typeName) === "class") {
-      modelClass = typeName;
-    }
-    Ember.assert("Couldn't get modelClass from " + typeName, modelClass);
-    return this.container.lookupFactory(modelClass.adapterName).create({
+    return buildRelatedInstance(this, typeName, "adapterName", {
       api_key: this.get("apiKey")
     });
   },
 
-  collectionFor: function(typeName) {
-    var CollectionClass = this.container.lookupFactory("balanced-addon-models@collection:" + typeName);
-    if (Ember.isBlank(CollectionClass)) {
-      CollectionClass = this.collectionFor("base");
-    }
-    return CollectionClass;
+  serializerFor: function(typeName) {
+    return buildRelatedInstance(this, typeName, "serializerName");
   },
 
-  processResponse: function(response) {
-    var self = this;
-    return Ember.A(response.items).map(function(item) {
-      return self.build(item._type, item);
+  collectionFor: function(typeName) {
+    return buildRelatedInstance(this, typeName, "collectionName", {
+      content: [],
+      modelType: typeName,
+      container: this.container,
+      store: this
     });
+  },
+
+  load: function(typeName, attributes) {
+    var model = this.build(typeName, attributes);
+    model.set("isNew", false);
+    return model;
   },
 
   build: function(typeName, attributes) {
     var model = this.modelFor(typeName).create();
     model.ingestJsonItem(attributes);
     model.setProperties({
+      __initializationAttributes: attributes,
       container: this.container,
       store: this
     });
@@ -64,41 +66,93 @@ var Store = Ember.Object.extend({
   },
 
   fetchCollection: function(typeName, uri, attributes) {
-    var collection = this.collectionFor(typeName).create({
-      content: [],
-      modelType: typeName,
-      container: this.container,
-      store: this
-    });
+    var collection = this.collectionFor(typeName);
+    return this.loadIntoCollection(typeName, collection, uri, attributes)
+      .then(function(col) {
+        col.set("isLoaded", true);
+        return collection;
+      }, function(col) {
+        col.set("isLoaded", true);
+        return Ember.RSVP.reject(col);
+      });
+  },
 
-    uri = QueryStringCreator.uri(uri, attributes);
-    return collection.loadUri(uri);
+  getCollection: function(typeName, uri, attributes) {
+    var collection = this.collectionFor(typeName);
+    this.loadIntoCollection(typeName, collection, uri, attributes)
+      .finally(function() {
+        collection.set("isLoaded", true);
+      });
+    return collection;
+  },
+
+  loadIntoCollection: function(typeName, collection, uri, attributes) {
+    var self = this;
+    var adapter = this.adapterFor(typeName);
+    var serializer = this.serializerFor(typeName);
+
+    return adapter.fetch(QueryStringCreator.uri(uri, attributes))
+      .then(function(response) {
+        return serializer.extractCollection(response);
+      })
+      .then(function(collectionResponse) {
+        var items = Ember.A(collectionResponse.items).map(function(item) {
+          return self.load(item._type || typeName, item);
+        });
+        collection.set("meta", collectionResponse.meta);
+        collection.pushObjects(items);
+        return collection;
+      });
   },
 
   fetchItem: function(typeName, uri, attributes) {
-    return this.fetchCollection(typeName, uri, attributes).then(function(collection) {
-      return collection.objectAt(0);
-    });
+    var self = this;
+    var serializer = this.serializerFor(typeName);
+
+    return this.adapterFor(typeName)
+      .fetch(QueryStringCreator.uri(uri, attributes))
+      .then(function(response) {
+        return serializer.extractSingle(response);
+      })
+      .then(function(item) {
+        return self.load(item._type || typeName, item);
+      });
   },
 
   getItem: function(typeName, uri, attributes) {
-    Ember.assert("Couldn't find " + typeName + " for uri " + uri, Ember.typeOf(uri) === "string");
-
-    var model = this.modelFor(typeName).create(attributes || {});
-    model.setProperties({
-      container: this.container,
-      store: this
-    });
-
-    this.fetch(typeName, uri).then(function(response) {
-      model.ingestJsonItem(response.items[0]);
-    });
+    var model = this.build(typeName, attributes || {});
+    model.set("href", uri);
+    model.reload();
     return model;
   },
 
-  fetch: function(type, uri) {
-    return this.adapterFor(type).fetch(uri);
+  search: function(query, attributes) {
+    var searchCollection = this.container.lookup("balanced-addon-models@collection:search");
+    searchCollection.setProperties({
+      content: [],
+      modelType: "transaction",
+      container: this.container,
+      store: this,
+    });
+    var a = {
+      query: query
+    };
+    Ember.merge(a, attributes);
+    searchCollection.setProperties(a);
+    searchCollection.load();
+    return searchCollection;
   },
 });
+
+function buildRelatedInstance(store, typeName, attributeName, attributes) {
+  var modelClass = store.modelFor(typeName);
+  var value = modelClass[attributeName];
+
+  Ember.assert("Couldn't get " + attributeName + " from " + typeName, !Ember.isBlank(value));
+
+  var klass = store.container.lookupFactory(value);
+  Ember.assert("Couldn't get " + attributeName + " instance from " + typeName, !Ember.isBlank(klass));
+  return klass.create(attributes);
+}
 
 export default Store;

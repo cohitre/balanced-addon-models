@@ -1,11 +1,41 @@
+import Ember from "ember";
 import Model from "./core/model";
 import BK from "./core/method-generators";
+import VH from "../utils/validation-helpers";
+import EmberValidations from "ember-validations";
 
 var Marketplace = Model.extend({
+  validations: {
+    name: {
+      presence: true
+    },
+    domainUrl: {
+      presence: {
+        "unless": "isTest"
+      },
+    },
+    supportEmailAddress: {
+      presence: {
+        "unless": "isTest"
+      },
+    },
+    supportPhoneNumber: {
+      presence: {
+        "unless": "isTest"
+      },
+      length: {
+        maximum: 15
+      },
+      inline: EmberValidations.validator(function() {
+        if (!this.get("isTest")) {
+          return VH.validatePhoneFormat(this.get("supportPhoneNumber"));
+        }
+      })
+    }
+  },
+
   fetchOwnerCustomer: BK.fetchSingle("customer", "owner_customer_uri"),
-
   fetchCustomers: BK.fetchCollection("customer"),
-
   fetchCards: BK.fetchCollection("card"),
   fetchBankAccounts: BK.fetchCollection("bank_account"),
 
@@ -26,6 +56,23 @@ var Marketplace = Model.extend({
   fetchOrders: BK.fetchCollection("order"),
 
   fetchLogs: BK.fetchCollectionForUri("log", "/logs"),
+
+  createUri: "/marketplaces",
+
+  getApiProperties: function() {
+    return {
+      name: this.get("name"),
+      domain_url: this.get("domainUrl"),
+      support_email_address: this.get("supportEmailAddress"),
+      support_phone_number: this.get("supportPhoneNumber"),
+    };
+  },
+
+  getDebuggingProperties: function() {
+    return Ember.merge(this.getApiProperties(), {
+      id: this.get("id")
+    });
+  },
 });
 
 Marketplace.reopenClass({

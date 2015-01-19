@@ -2,8 +2,8 @@
   "name": "balanced-addon-models",
   "version": "0.0.3",
   "dependencies": {
-    "handlebars": "~1.3.0",
-    "jquery": "^1.11.1",
+    "handlebars": "1.3.0",
+    "jquery": "1.11.1",
     "ember": "1.8.0-beta.5",
     "ember-data": "1.0.0-beta.11",
     "ember-resolver": "~0.1.7",
@@ -13,8 +13,9 @@
     "ember-load-initializers": "stefanpenner/ember-load-initializers#0.0.2",
     "ember-qunit": "0.1.8",
     "ember-qunit-notifications": "0.0.4",
-    "qunit": "~1.15.0",
-    "sinon": "http://sinonjs.org/releases/sinon-1.11.1.js"
+    "qunit": "1.15.0",
+    "sinon": "http://sinonjs.org/releases/sinon-1.11.1.js",
+    "blanket": "1.1.5"
   },
   "devDependencies": {}
 }

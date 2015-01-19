@@ -30,54 +30,71 @@ test("#hasNextPage", function() {
   deepEqual(subject.get("hasNextPage"), false);
 });
 
-test("#ingestResponse", function() {
-  var store = {
-    processResponse: sinon.stub().returns([1, 2, 3])
-  };
-  var response = {
-    meta: [3, 4, 2]
-  };
-  var subject = this.subject();
-  subject.setProperties({
-    store: store,
-    content: [4]
-  });
-  subject.ingestResponse(response);
-
-  deepEqual(store.processResponse.args, [[response]]);
-  deepEqual(subject.get("content"), [4, 1, 2, 3]);
-});
-
 test("#loadUri", function(uri) {
-  var store = {
-    processResponse: sinon.stub().returns([]),
-    fetch: sinon.stub().returns(Ember.RSVP.resolve({
-      meta: "metaFields",
-      items: []
-    }))
-  };
-
+  var store = buildStubbedStore();
   var subject = this.subject();
+
   subject.setProperties({
     store: store,
     modelType: "customer",
     content: []
   });
-  subject.loadUri("/customers").then(function(s) {
-    deepEqual(s.get("meta"), "metaFields");
-    equal(subject, s);
-    deepEqual(store.fetch.args, [["customer", "/customers"]]);
+  subject.loadUri("/customers");
+  deepEqual(store.loadIntoCollection.args, [["customer", subject, "/customers"]]);
+});
+
+test("#loadUris", function() {
+  var store = buildStubbedStore();
+  var s = this.subject();
+
+  s.setProperties({
+    store: store,
+    modelType: "marketplace",
+    content: [],
+    nextUri: "/marketplaces"
   });
+
+  deepEqual(s.get("isLoaded"), false);
+
+  s.loadUris(["/uri1", "/uri2"])
+    .then(function() {
+      deepEqual(s.get("isLoaded"), true);
+      deepEqual(store.loadIntoCollection.args, [
+        ["marketplace", s, "/uri1"],
+        ["marketplace", s, "/uri2"]
+      ]);
+    });
+});
+
+test("#loadUris (error)", function() {
+  var store = {
+    loadIntoCollection: sinon.stub()
+  };
+  store.loadIntoCollection.onCall(0).returns(Ember.RSVP.resolve({}));
+  store.loadIntoCollection.onCall(1).returns(Ember.RSVP.reject({}));
+  var s = this.subject();
+
+  s.setProperties({
+    store: store,
+    modelType: "marketplace",
+    content: [],
+    nextUri: "/marketplaces"
+  });
+
+  deepEqual(s.get("isLoaded"), false);
+
+  s.loadUris(["/uri1", "/uri2"])
+    .then(undefined, function() {
+      deepEqual(s.get("isLoaded"), true);
+      deepEqual(store.loadIntoCollection.args, [
+        ["marketplace", s, "/uri1"],
+        ["marketplace", s, "/uri2"]
+      ]);
+    });
 });
 
 test("#loadNext", function() {
-  var store = {
-    processResponse: sinon.stub().returns([]),
-    fetch: sinon.stub().returns(Ember.RSVP.resolve({
-      meta: "metaFields",
-      items: []
-    }))
-  };
+  var store = buildStubbedStore();
 
   var subject = this.subject();
   subject.setProperties({
@@ -86,9 +103,18 @@ test("#loadNext", function() {
     content: [],
     nextUri: "/marketplaces"
   });
-  subject.loadNext().then(function(s) {
-    deepEqual(s.get("meta"), "metaFields");
-    equal(subject, s);
-    deepEqual(store.fetch.args, [["marketplace", "/marketplaces"]]);
-  });
+  subject.loadNext();
+  deepEqual(store.loadIntoCollection.args, [["marketplace", subject, "/marketplaces"]]);
 });
+
+function buildStubbedStore() {
+  var response = {
+    meta: {
+      next: "/cool"
+    },
+    items: []
+  };
+  return {
+    loadIntoCollection: sinon.stub().returns(Ember.RSVP.resolve(response))
+  };
+}

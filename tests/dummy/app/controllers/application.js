@@ -6,6 +6,7 @@ export default Ember.Controller.extend({
       var store = this.container.lookup("store:balanced");
       this.set("store", store);
       store.set("apiKey", apiKey);
+      window.store = store;
       this.transitionToRoute("marketplace");
     },
   }

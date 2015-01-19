@@ -3,9 +3,9 @@ import { test, moduleFor } from 'ember-qunit';
 
 moduleFor("balanced-addon-models@adapter:balanced-api-base", "adapter - BalancedApiBaseAdapter");
 
-test("default", function() {
+test("default properties", function() {
   var subject = this.subject();
-  var properties = subject.getProperties("serializerName", "host", "accepts", "contentType");
+  var properties = subject.getProperties("host", "accepts", "contentType");
 
   deepEqual(properties, {
     accepts: {
@@ -13,7 +13,6 @@ test("default", function() {
     },
     contentType: "application/json; charset=UTF-8",
     host: "https://api.balancedpayments.com",
-    serializerName: "balanced-addon-models@serializer:rev1",
   });
 });
 

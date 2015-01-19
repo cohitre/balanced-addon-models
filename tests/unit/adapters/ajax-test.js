@@ -3,6 +3,13 @@ import { test, moduleFor } from 'ember-qunit';
 
 moduleFor("balanced-addon-models@adapter:ajax", "adapter - Ajax");
 
+test("#_uri", function() {
+  var s = this.subject();
+
+  s.set("host", "http://some-host");
+  deepEqual(s._uri("/some-path"), "http://some-host/some-path");
+});
+
 test("#ajax", function() {
   var stub = sinon.stub(jQuery, "ajax").returns(Ember.RSVP.resolve({}));
 
@@ -27,25 +34,14 @@ test("#ajax", function() {
 });
 
 test("#fetch", function() {
-  var serializer = {
-    extractCollection: sinon.stub().returns({
-      items: []
-    })
-  };
-  var container = {
-    lookup: sinon.stub().returns(serializer)
-  };
   var stub = sinon.stub(jQuery, "ajax").returns(Ember.RSVP.resolve("..."));
-
   var subject = this.subject();
   subject.setProperties({
     host: "https://api.bp.com",
-    container: container
   });
+
   subject.fetch("/marketplaces").then(function(r) {
-    deepEqual(serializer.extractCollection.args, [[
-      "..."
-    ]]);
+    deepEqual(r, "...");
     deepEqual(jQuery.ajax.args, [["https://api.bp.com/marketplaces", {
       accepts: undefined,
       contentType: undefined,
@@ -59,30 +55,17 @@ test("#fetch", function() {
 });
 
 test("#post", function() {
-  var serializer = {
-    extractCollection: sinon.stub().returns({
-      items: []
-    })
-  };
-  var container = {
-    lookup: sinon.stub().returns(serializer)
-  };
   var stub = sinon.stub(jQuery, "ajax").returns(Ember.RSVP.resolve("..."));
-
-  var subject = this.subject();
-  subject.setProperties({
-    host: "https://api.bp.com",
-    container: container
-  });
   var data = {
     data: {
       name: "Cool"
     }
   };
+  var subject = this.subject();
+  subject.setProperties({
+    host: "https://api.bp.com",
+  });
   subject.post("/marketplaces", data).then(function(r) {
-    deepEqual(serializer.extractCollection.args, [[
-      "..."
-    ]], "Extracted collection is ajax response");
     deepEqual(jQuery.ajax.args, [["https://api.bp.com/marketplaces", {
       contentType: undefined,
       dataType: "json",
@@ -97,20 +80,10 @@ test("#post", function() {
 });
 
 test("#update", function() {
-  var serializer = {
-    extractCollection: sinon.stub().returns({
-      items: []
-    })
-  };
-  var container = {
-    lookup: sinon.stub().returns(serializer)
-  };
   var stub = sinon.stub(jQuery, "ajax").returns(Ember.RSVP.resolve("..."));
-
   var subject = this.subject();
   subject.setProperties({
     host: "https://api.bp.com",
-    container: container
   });
   var data = {
     data: {
@@ -118,9 +91,6 @@ test("#update", function() {
     }
   };
   subject.update("/marketplaces", data).then(function(r) {
-    deepEqual(serializer.extractCollection.args, [[
-      "..."
-    ]]);
     deepEqual(jQuery.ajax.args, [["https://api.bp.com/marketplaces", {
       accepts: undefined,
       contentType: undefined,
@@ -135,25 +105,13 @@ test("#update", function() {
 });
 
 test("#del", function() {
-  var serializer = {
-    extractCollection: sinon.stub().returns({
-      items: []
-    })
-  };
-  var container = {
-    lookup: sinon.stub().returns(serializer)
-  };
   var stub = sinon.stub(jQuery, "ajax").returns(Ember.RSVP.resolve("..."));
-
   var subject = this.subject();
   subject.setProperties({
     host: "https://api.bp.com",
-    container: container
   });
   subject.del("/marketplaces").then(function(r) {
-    deepEqual(serializer.extractCollection.args, [[
-      "..."
-    ]]);
+    deepEqual(r, "...");
     deepEqual(jQuery.ajax.args, [["https://api.bp.com/marketplaces", {
       accepts: undefined,
       contentType: undefined,
@@ -164,20 +122,4 @@ test("#del", function() {
     }]]);
     stub.restore();
   });
-});
-
-test("#getSerializer", function() {
-  var container = {
-    lookup: sinon.stub()
-  };
-
-  var subject = this.subject();
-  subject.setProperties({
-    container: container,
-    serializerName: "serializer:cool"
-  });
-
-  subject.getSerializer();
-
-  deepEqual(container.lookup.args, [["serializer:cool"]]);
 });

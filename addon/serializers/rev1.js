@@ -1,15 +1,15 @@
 import Ember from "ember";
 
 var Rev1Serializer = Ember.Object.extend({
-	extractCollection: function(rootJson) {
+  extractCollection: function(rootJson) {
     var self = this;
     var collection = Ember.A();
 
-		var populateFunc = function(val, typeName) {
-			collection.push(self.populateObject(val, typeName, rootJson));
-		};
+    var populateFunc = function(val, typeName) {
+      collection.push(self.populateObject(val, typeName, rootJson));
+    };
 
-		each(rootJson, function(values, typeName) {
+    each(rootJson, function(values, typeName) {
       if (Ember.isArray(values)) {
         each(values, function(value)  {
           populateFunc(value, typeName);
@@ -17,12 +17,17 @@ var Rev1Serializer = Ember.Object.extend({
       }
     });
 
-		return {
-			items: collection,
-			linked: rootJson.linked,
+    return {
+      items: collection,
+      linked: rootJson.linked,
       meta: rootJson.meta
-		};
-	},
+    };
+  },
+
+  extractSingle: function(rootJson) {
+    var result = this.extractCollection(rootJson);
+    return result.items[0];
+  },
 
 	populateObject: function(modelObj, objType, rootJson) {
 		var linksValues = {};

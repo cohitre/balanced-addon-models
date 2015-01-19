@@ -12,10 +12,6 @@ var AjaxAdapter = BaseAdapter.extend({
 	update: generateAjaxMethod("PUT"),
 	del: generateAjaxMethod("DELETE"),
 
-  getSerializer: function() {
-    return this.container.lookup(this.get("serializerName"));
-  },
-
   ajax: function(uri, method, settings) {
     var deferred = Ember.RSVP.defer();
     settings = Ember.merge({
@@ -38,11 +34,7 @@ var AjaxAdapter = BaseAdapter.extend({
 
 function generateAjaxMethod(method) {
   return function(path, settings) {
-    var serializer = this.getSerializer();
-    return this.ajax(this._uri(path), method, settings)
-      .then(function(response) {
-        return serializer.extractCollection(response);
-      });
+    return this.ajax(this._uri(path), method, settings);
   };
 }
 

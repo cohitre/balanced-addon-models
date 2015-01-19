@@ -2,6 +2,7 @@
   "predef": [
     "window",
     "$",
+    "DS",
     "jQuery"
   ],
   "node": false,
