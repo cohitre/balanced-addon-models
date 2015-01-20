@@ -22,6 +22,7 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
 	isNew: true,
 
   updateUri: Ember.computed.reads("href").readOnly(),
+  deleteUri: Ember.computed.reads("href").readOnly(),
 
   clearErrors: function() {
     var errors = this.get("errors");
@@ -106,9 +107,9 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
     Ember.assert("core/model#getApiProperties method is not implemented in object "+ this, false);
   },
 
-	delete: function() {
-    Ember.assert("core/model#delete method is not implemented", false);
-	},
+  delete: function() {
+    return this.getAdapter().del(this.get("deleteUri"));
+  },
 
   reload: function() {
     var self = this;
