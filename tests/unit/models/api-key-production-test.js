@@ -42,10 +42,10 @@ test("businessTaxId validations", function() {
   };
 
   s.set("businessType", "llc");
-  t(null, ["can't be blank", "is too short (minimum is 4 characters)"]);
-  t("", ["can't be blank", "is too short (minimum is 4 characters)"]);
-  t("xx", ["is too short (minimum is 4 characters)"]);
-  t("xxxxxxxxxxxxxxxxxxxxxxxxxx", []);
+  t(null, ["can't be blank", "must match format 12-1234567"]);
+  t("", ["can't be blank", "must match format 12-1234567"]);
+  t("xx", ["must match format 12-1234567"]);
+  t("99-0000000", []);
   s.set("businessType", "person");
   t(null, []);
 });

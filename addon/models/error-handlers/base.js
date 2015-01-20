@@ -15,15 +15,23 @@ var BaseErrorsHandler = Ember.Object.extend({
     this.addErrorToField("_root", errorMessage);
   },
 
+  handleValidationError: function(error) {
+    for (var fieldName in error.extras) {
+      this.addErrorToField(fieldName, error.extras[fieldName]);
+    }
+  },
+
+  isValidationError: function(error) {
+    return !Ember.isBlank(error.extras);
+  },
+
   handleApiResponse: function(response) {
     var self = this;
     var hasValidationError = false;
     Ember.A(response.errors).forEach(function(error) {
-      if (error.extras) {
+      if (self.isValidationError(error)) {
         hasValidationError = true;
-        for (var fieldName in error.extras) {
-          self.addErrorToField(fieldName, error.extras[fieldName]);
-        }
+        self.handleValidationError(error);
       }
       else if (!Ember.isBlank(error.description)) {
         self.addRootError(cleanDescription(error.description));

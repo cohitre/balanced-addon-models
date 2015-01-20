@@ -24,8 +24,9 @@ var ApiKeyProduction = ApiKey.extend({
       presence: {
         "if": "isBusiness"
       },
-      length: {
-        minimum: 4,
+      format: {
+        "with": /^\d\d-\d{7}$/,
+        message: "must match format 12-1234567",
         "if": "isBusiness"
       }
     },

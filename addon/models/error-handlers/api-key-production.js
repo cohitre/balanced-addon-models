@@ -1,4 +1,4 @@
-//import Ember from "ember";
+import Ember from "ember";
 import BaseErrorHandler from "./base";
 
 var ApiKeyProductionErrorHandler = BaseErrorHandler.extend({
