@@ -31,6 +31,40 @@ var MethodGenerators = {
     };
   },
 
+  attr: function(fieldName) {
+    var name = "__attributes." + fieldName;
+    return Ember.computed.alias(name);
+  },
+
+  attrCentsToDollars: function(fieldName) {
+    var name = "__attributes." + fieldName;
+    return Ember.computed(name, function(attrName, value) {
+      if (arguments.length > 1) {
+        this.set(name, Ember.isBlank(value) ? null : (value * 100));
+      }
+      var v = this.get(name);
+      return Ember.isBlank(v) ? null : (v/100);
+    });
+  },
+
+  attrStringToDate: function(fieldName) {
+    var name = "__attributes." + fieldName;
+    return Ember.computed(name, function(attrName, value) {
+      if (arguments.length > 1) {
+        if (Ember.typeOf(value) === "date") {
+          this.set(name, value.toISOString());
+        }
+        else {
+          this.set(name, value);
+        }
+      }
+      var v = this.get(name);
+      return Ember.isBlank(v) ?
+          null :
+          new Date(v);
+    });
+  },
+
   computed: {
     readOnly: function(fieldName) {
       return Ember.computed.reads(fieldName).readOnly();
@@ -60,7 +94,8 @@ var MethodGenerators = {
 function fetch(store, methodName, typeName, uri, attributes) {
   if (Ember.isBlank(uri)) {
     return Ember.RSVP.resolve(null);
-  } else {
+  }
+  else {
     return store[methodName](typeName, uri, attributes);
   }
 }
@@ -70,11 +105,11 @@ function compileAttributes(object, defaultAttributes, attributes) {
   compiledAttributes = Ember.merge(compiledAttributes, defaultAttributes);
   compiledAttributes = Ember.merge(compiledAttributes, attributes);
 
-    for (var attributeName in compiledAttributes) {
-      if (Ember.typeOf(compiledAttributes[attributeName]) === "function") {
-        compiledAttributes[attributeName] = compiledAttributes[attributeName].call(object);
-      }
+  for (var attributeName in compiledAttributes) {
+    if (Ember.typeOf(compiledAttributes[attributeName]) === "function") {
+      compiledAttributes[attributeName] = compiledAttributes[attributeName].call(object);
     }
+  }
   return compiledAttributes;
 }
 

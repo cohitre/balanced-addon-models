@@ -43,6 +43,12 @@ var ModelHelpers = {
       deepEqual(subject.get("errors." + fieldName), expectation);
     };
   },
+
+  shouldMatch: function(subject, properties) {
+    for (var key in properties) {
+      deepEqual(subject.get(key), properties[key], "subject#" + key);
+    }
+  }
 };
 
 export default ModelHelpers;

@@ -1,8 +1,17 @@
 import Ember from "ember";
 import EmberValidations from 'ember-validations';
 import ErrorsHandler from "../error-handlers/base";
+import BK from "./method-generators";
 
 var Model = Ember.Object.extend(EmberValidations.Mixin, {
+  id: Ember.computed.reads("__attributes.id").readOnly(),
+
+  href: BK.attr("href").readOnly(),
+  updateUri: Ember.computed.reads("href").readOnly(),
+  deleteUri: Ember.computed.reads("href").readOnly(),
+  createdAt: BK.attrStringToDate("created_at"),
+  updatedAt: BK.attrStringToDate("updated_at"),
+
   getErrorsHandler: function() {
     return ErrorsHandler.create({
       model: this
@@ -21,8 +30,9 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
 	isDeleted: false,
 	isNew: true,
 
-  updateUri: Ember.computed.reads("href").readOnly(),
-  deleteUri: Ember.computed.reads("href").readOnly(),
+  __attributes: Ember.computed(function() {
+    return Ember.Object.create();
+  }).readOnly(),
 
   clearErrors: function() {
     var errors = this.get("errors");
@@ -123,7 +133,7 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
 
 	ingestJsonItem: function(json) {
     json = json || {};
-    this.setProperties(json);
+    this.get("__attributes").setProperties(json);
     this.set("isLoaded", true);
     return this;
 	},

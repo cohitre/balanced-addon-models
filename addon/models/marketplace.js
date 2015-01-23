@@ -59,6 +59,20 @@ var Marketplace = Model.extend({
 
   createUri: "/marketplaces",
 
+  name: BK.attr("name"),
+  domainUrl: BK.attr("domain_url"),
+  supportPhoneNumber: BK.attr("support_phone_number"),
+  supportEmailAddress: BK.attr("support_email_address"),
+  meta: BK.attr("meta"),
+
+  href: BK.attr("href").readOnly(),
+  createdAt: BK.attrStringToDate("created_at").readOnly(),
+  updatedAt: BK.attrStringToDate("updated_at").readOnly(),
+  isProduction: BK.attr("production").readOnly(),
+
+  escrowDollars: BK.attrCentsToDollars("in_escrow").readOnly(),
+  unsettledFeesDollars: BK.attrCentsToDollars("unsettled_fees").readOnly(),
+
   getApiProperties: function() {
     return {
       name: this.get("name"),

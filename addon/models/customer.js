@@ -8,8 +8,23 @@ var CUSTOMER_TYPES = {
 };
 
 var Customer = Model.extend({
+  name: BK.attr('name'),
+  dateOfBirthMonth: BK.attr("dob_month"),
+  dateOfBirthYear: BK.attr("dob_year"),
+
+  phone: BK.attr("phone"),
+  address: BK.attr("address"),
+  merchantStatus: BK.attr("merchant_status"),
+  meta: BK.attr("meta"),
+  socialSecurityNumberLast4: BK.attr("ssn_last4"),
+  employerIdentificationNumber: BK.attr("ein"),
+  email: BK.attr("email"),
+
+  businessName: BK.attr("business_name"),
+
   fetchBankAccounts: BK.fetchCollection("bank_account"),
   fetchCards: BK.fetchCollection("card"),
+
 
   createUri: "/customers",
 
@@ -26,6 +41,13 @@ var Customer = Model.extend({
     return this.get("href") + "/search";
   }).property("href"),
 
+  fundingInstruments: Ember.computed(function(attr) {
+    var self = this;
+    this.fetchFundingInstruments().then(function(collection) {
+      self.set(attr, collection);
+    });
+    return undefined;
+  }),
   bankAccounts: Ember.computed(function() {
     var self = this;
     this.fetchBankAccounts().then(function(collection) {

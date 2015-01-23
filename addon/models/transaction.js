@@ -13,13 +13,7 @@ var Transaction = Model.extend({
 
   isUnlinked: Ember.computed.not("links.order"),
 
-  amount_dollars: function() {
-    if (this.get('amount')) {
-      return (this.get('amount') / 100).toFixed(2);
-    } else {
-      return null;
-    }
-  }.property('amount'),
+  amountDollars: BK.attrCentsToDollars("amount"),
 
   dasherized_funding_instrument_type: function() {
     if (this.get('funding_instrument_type')) {

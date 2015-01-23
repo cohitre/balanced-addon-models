@@ -65,6 +65,18 @@ var Store = Ember.Object.extend({
     return model;
   },
 
+  getMarketplace: function() {
+    return this.fetchItem("marketplace", "/marketplaces");
+  },
+
+  getCustomers: function(options) {
+    return this.fetchCollection("customer", "/customers", options);
+  },
+
+  getTransactions: function(options) {
+    return this.fetchCollection("transaction", "/transactions", options);
+  },
+
   fetchCollection: function(typeName, uri, attributes) {
     var collection = this.collectionFor(typeName);
     return this.loadIntoCollection(typeName, collection, uri, attributes)

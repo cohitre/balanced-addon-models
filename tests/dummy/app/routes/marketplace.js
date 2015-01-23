@@ -12,16 +12,20 @@ export default Ember.Route.extend({
   },
 
   model: function() {
-    return this.getStore().fetchItem("marketplace", "/marketplaces");
+    return this.getStore().getMarketplace();
   },
 
   setupController: function(controller, model) {
-    model.fetchCustomers().then(function(collection) {
-      controller.set("customers", collection);
-    });
+    var s = this.getStore();
+    controller.set("model", model);
+    s.getCustomers()
+      .then(function(collection) {
+        controller.set("customers", collection);
+      });
 
-    model.fetchTransactions().then(function(collection) {
-      controller.set("transactions", collection);
-    });
+    s.getTransactions()
+      .then(function(collection) {
+        controller.set("transactions", collection);
+      });
   },
 });

@@ -1,9 +1,9 @@
-<h2>Marketplace: {{name}}</h2>
+<h2>Marketplace: {{model.name}}</h2>
 
 <h3>Transactions: {{transactions.length}}/{{transactions.totalCount}}</h3>
 <a {{action "reload" transactions}} href="#">reload</a>
 |
-{{#if transactions.isNextPage}}
+{{#if transactions.hasNextPage}}
   <a {{action "loadNext" transactions}} href="#">load next</a>
 {{/if}}
 
@@ -17,8 +17,8 @@
   <tbody>
     {{#each transaction in transactions}}
       <tr>
-        <td>{{transaction.created_at}}</td>
-        <td>{{transaction.amount}}</td>
+        <td>{{transaction.createdAt}}</td>
+        <td>{{transaction.amountDollars}}</td>
       </tr>
     {{/each}}
   </tbody>
@@ -27,7 +27,7 @@
 <h3>Customers: {{customers.length}}/{{customers.totalCount}}</h3>
 <a {{action "reload" customers}} href="#">reload</a>
 |
-{{#if customers.isNextPage}}
+{{#if customers.hasNextPage}}
   <a {{action "loadNext" customers}} href="#">load next</a>
 {{/if}}
 
@@ -36,17 +36,15 @@
     <tr>
       <td>Date</td>
       <td>Customer</td>
-      <td>Bank Accounts count</td>
-      <td>Cards count</td>
+      <td>Funding Instruments count</td>
     </tr>
   </thead>
   <tbody>
     {{#each customer in customers}}
       <tr>
-        <td>{{customer.created_at}}</td>
+        <td>{{customer.createdAt}}</td>
         <td>{{customer.name}}</td>
-        <td>{{customer.bankAccounts.length}}</td>
-        <td>{{customer.cards.length}}</td>
+        <td>{{customer.fundingInstruments.length}}</td>
       </tr>
     {{/each}}
   </tbody>
