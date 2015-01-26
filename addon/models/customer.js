@@ -25,7 +25,6 @@ var Customer = Model.extend({
   fetchBankAccounts: BK.fetchCollection("bank_account"),
   fetchCards: BK.fetchCollection("card"),
 
-
   createUri: "/customers",
 
   fetchFundingInstruments: BK.fetchCollection("funding-instrument", "search_uri", {

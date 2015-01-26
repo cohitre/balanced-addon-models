@@ -18,14 +18,15 @@ export default Ember.Route.extend({
   setupController: function(controller, model) {
     var s = this.getStore();
     controller.set("model", model);
-    s.getCustomers()
-      .then(function(collection) {
-        controller.set("customers", collection);
-      });
 
-    s.getTransactions()
-      .then(function(collection) {
-        controller.set("transactions", collection);
-      });
+    collectionGetter(s, controller, "getCustomers", "customers");
+    collectionGetter(s, controller, "getTransactions", "transactions");
+    collectionGetter(s, controller, "getApiKeys", "apiKeys");
   },
 });
+
+function collectionGetter(store, controller, methodName, propertyName) {
+  store[methodName]().then(function(collection) {
+    controller.set(propertyName, collection);
+  });
+}

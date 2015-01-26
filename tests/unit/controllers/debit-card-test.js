@@ -36,18 +36,24 @@ test("#save", function() {
   var card = store.build("card", {
     number: "10000000000"
   });
-  var debit = store.build("debit", {
-    amount: -10
+  var debit = store.build("debit");
+  debit.setProperties({
+    amountDollars: "-10"
   });
 
   var ajax = sinon.stub(jQuery, "ajax");
 
   s.save(card, debit)
     .then(undefined, function() {
-      deepEqual(debit.get("errors.amount"), ["must be greater than or equal to 0"]);
+      deepEqual(debit.get("errors.amountDollars"), [
+        "must be greater than 0"
+      ]);
+      deepEqual(debit.get("errors.amount"), [
+        "must be greater than 0"
+      ]);
     })
     .then(function() {
-      debit.set("amount", 10);
+      debit.set("amountDollars", 10);
       balanced.response = responses.card.allEmpty;
       return s.save(card, debit);
     })
@@ -62,6 +68,7 @@ test("#save", function() {
       return s.save(card, debit);
     })
     .then(undefined, function(e) {
+      ajax.restore();
       deepEqual(card.get("errors._root"), []);
       deepEqual(debit.get("errors._root"), []);
     });

@@ -24,23 +24,26 @@ var ModelHelpers = {
   },
 
   shouldHaveAmountValidations: function(fieldName) {
-    var MH = this;
     fieldName = fieldName || "amount";
     return function() {
       var s = this.subject();
-      var t = MH.generateErrorTester(s, fieldName);
+      var t = function(value, expectation) {
+        s.set("amount", value);
+        deepEqual(s.get("errors.amount"), expectation);
+      };
 
-      t(null, [ "can't be blank", "is not a number"]);
-      t(10, []);
-      t(-100, ["must be greater than or equal to 0"]);
-      t(10.20, ["must be an integer"]);
+      t("0", ["must be greater than 0"], 'Amount is "0"');
+      t("-10.40", ["must be an integer"], 'Amount is "-10.40"');
+      t(-10, ["must be greater than 0"], "Amount is -10");
+      t(null, ["can't be blank", "is not a number"], "Amount is null");
+      t(10, [], "Amount is valid");
     };
   },
 
   generateErrorTester: function(subject, fieldName) {
-    return function(value, expectation) {
+    return function(value, expectation, message) {
       subject.set(fieldName, value);
-      deepEqual(subject.get("errors." + fieldName), expectation);
+      deepEqual(subject.get("errors." + fieldName), expectation, message);
     };
   },
 

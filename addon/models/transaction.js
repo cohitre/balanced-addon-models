@@ -3,6 +3,22 @@ import Model from "./core/model";
 import BK from "./core/method-generators";
 
 var Transaction = Model.extend({
+  validations: {
+    amount: {
+      presence: true,
+      numericality: {
+        onlyInteger: true,
+        greaterThan: 0
+      }
+    },
+    amountDollars: {
+      presence: true,
+      numericality: {
+        greaterThan: 0
+      }
+    },
+  },
+
   fetchEvents: BK.fetchCollection("event"),
   fetchLogs: BK.fetchCollectionForUri("log", "/logs", {
     method: ["post", "put", "delete"],
@@ -11,8 +27,9 @@ var Transaction = Model.extend({
     },
   }),
 
-  isUnlinked: Ember.computed.not("links.order"),
+  isUnlinked: Ember.computed.not("__attributes.links.order"),
 
+  amount: BK.attrNumber("amount"),
   amountDollars: BK.attrCentsToDollars("amount"),
 
   dasherized_funding_instrument_type: function() {

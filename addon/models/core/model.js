@@ -28,7 +28,7 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
 	isLoaded: false,
 	isSaving: false,
 	isDeleted: false,
-	isNew: true,
+	isNew: Ember.computed.not("id"),
 
   __attributes: Ember.computed(function() {
     return Ember.Object.create();
@@ -73,14 +73,9 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
 	},
 
   createInstance: function() {
-    var self = this;
     return this.getAdapter()
       .post(this.get("createUri"), {
         data: this.getApiProperties()
-      })
-      .then(function(r) {
-        self.set("isNew", false);
-        return r;
       });
   },
 

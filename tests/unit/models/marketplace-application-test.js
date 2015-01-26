@@ -10,8 +10,7 @@ test("#serializer", MH.shouldUseBalancedApiSerializer("balanced-addon-models@ser
 
 test("#href", function() {
   var s = this.subject();
-  s.set("id", "aaabbb111");
-
+  s.set("__attributes.id", "aaabbb111");
   deepEqual(s.get("href"), "/applications/aaabbb111/");
 });
 

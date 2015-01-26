@@ -15,6 +15,7 @@ test("#ajax", function() {
 
   var subject = this.subject();
   subject.ajax("/customers", "GET");
+  stub.restore();
 
   deepEqual(stub.args, [
     [
@@ -29,8 +30,6 @@ test("#ajax", function() {
       }
     ]
   ]);
-
-  stub.restore();
 });
 
 test("#fetch", function() {
@@ -40,18 +39,16 @@ test("#fetch", function() {
     host: "https://api.bp.com",
   });
 
-  subject.fetch("/marketplaces").then(function(r) {
-    deepEqual(r, "...");
-    deepEqual(jQuery.ajax.args, [["https://api.bp.com/marketplaces", {
-      accepts: undefined,
-      contentType: undefined,
-      dataType: "json",
-      headers: undefined,
-      method: "GET",
-      context: subject
-    }]]);
-    stub.restore();
-  });
+  subject.fetch("/marketplaces");
+  deepEqual(stub.args, [["https://api.bp.com/marketplaces", {
+    accepts: undefined,
+    contentType: undefined,
+    dataType: "json",
+    headers: undefined,
+    method: "GET",
+    context: subject
+  }]]);
+  stub.restore();
 });
 
 test("#post", function() {
@@ -65,18 +62,17 @@ test("#post", function() {
   subject.setProperties({
     host: "https://api.bp.com",
   });
-  subject.post("/marketplaces", data).then(function(r) {
-    deepEqual(jQuery.ajax.args, [["https://api.bp.com/marketplaces", {
-      contentType: undefined,
-      dataType: "json",
-      headers: undefined,
-      method: "POST",
-      accepts: undefined,
-      context: subject,
-      data: '{"name":"Cool"}'
-    }]]);
-    stub.restore();
-  });
+  subject.post("/marketplaces", data);
+  deepEqual(stub.args, [["https://api.bp.com/marketplaces", {
+    contentType: undefined,
+    dataType: "json",
+    headers: undefined,
+    method: "POST",
+    accepts: undefined,
+    context: subject,
+    data: '{"name":"Cool"}'
+  }]]);
+  stub.restore();
 });
 
 test("#update", function() {
@@ -90,18 +86,17 @@ test("#update", function() {
       name: "Cool"
     }
   };
-  subject.update("/marketplaces", data).then(function(r) {
-    deepEqual(jQuery.ajax.args, [["https://api.bp.com/marketplaces", {
-      accepts: undefined,
-      contentType: undefined,
-      dataType: "json",
-      headers: undefined,
-      method: "PUT",
-      context: subject,
-      data: '{"name":"Cool"}'
-    }]]);
-    stub.restore();
-  });
+  subject.update("/marketplaces", data);
+  deepEqual(stub.args, [["https://api.bp.com/marketplaces", {
+    accepts: undefined,
+    contentType: undefined,
+    dataType: "json",
+    headers: undefined,
+    method: "PUT",
+    context: subject,
+    data: '{"name":"Cool"}'
+  }]]);
+  stub.restore();
 });
 
 test("#del", function() {
@@ -110,16 +105,14 @@ test("#del", function() {
   subject.setProperties({
     host: "https://api.bp.com",
   });
-  subject.del("/marketplaces").then(function(r) {
-    deepEqual(r, "...");
-    deepEqual(jQuery.ajax.args, [["https://api.bp.com/marketplaces", {
-      accepts: undefined,
-      contentType: undefined,
-      dataType: "json",
-      headers: undefined,
-      method: "DELETE",
-      context: subject,
-    }]]);
-    stub.restore();
-  });
+  subject.del("/marketplaces");
+  deepEqual(stub.args, [["https://api.bp.com/marketplaces", {
+    accepts: undefined,
+    contentType: undefined,
+    dataType: "json",
+    headers: undefined,
+    method: "DELETE",
+    context: subject,
+  }]]);
+  stub.restore();
 });

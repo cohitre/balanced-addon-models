@@ -32,7 +32,6 @@ var FundingInstrument = Model.extend({
     });
     return deferred.promise;
   },
-
 });
 
 export default FundingInstrument;

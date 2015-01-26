@@ -8,11 +8,10 @@ var MarketplaceApplication = Model.extend({
   createdAt: BK.computed.parseDate("updated_at"),
 
   current_monthly_volume: 0,
+  createUri: "/applications/",
   href: Ember.computed("id", function() {
     return "/applications/" + this.get("id") + "/";
   }),
-
-  createUri: "/applications/",
 
   isAccepted: Ember.computed.equal("status", "ACCEPTED").readOnly(),
   isPending: Ember.computed.equal("status", "PENDING").readOnly(),

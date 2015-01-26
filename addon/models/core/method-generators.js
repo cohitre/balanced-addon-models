@@ -40,10 +40,21 @@ var MethodGenerators = {
     var name = "__attributes." + fieldName;
     return Ember.computed(name, function(attrName, value) {
       if (arguments.length > 1) {
-        this.set(name, Ember.isBlank(value) ? null : (value * 100));
+        this.set(name, Ember.isBlank(value) ? null : (parseFloat(value, 10) * 100));
       }
       var v = this.get(name);
       return Ember.isBlank(v) ? null : (v/100);
+    });
+  },
+
+  attrNumber: function(fieldName) {
+    var name = "__attributes." + fieldName;
+    return Ember.computed(name, function(attrName, value) {
+      if (arguments.length > 1) {
+        this.set(name, Ember.isBlank(value) ? null : parseFloat(value, 10));
+      }
+      var v = this.get(name);
+      return Ember.isBlank(v) ? null : v;
     });
   },
 

@@ -1,8 +1,27 @@
 <h2>Marketplace: {{model.name}}</h2>
 
-<h3>Transactions: {{transactions.length}}/{{transactions.totalCount}}</h3>
+{{table-title title="ApiKeys" collection=apiKeys}}
+<table>
+  <thead>
+    <tr>
+      <td>Date</td>
+      <td>Name</td>
+      <td>Secret</td>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each apiKey in apiKeys}}
+      <tr>
+        <td>{{apiKey.createdAt}}</td>
+        <td>{{apiKey.meta.name}}</td>
+        <td>{{apiKey.secret}}</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+
+{{table-title title="Transactions" collection=transactions}}
 <a {{action "reload" transactions}} href="#">reload</a>
-|
 {{#if transactions.hasNextPage}}
   <a {{action "loadNext" transactions}} href="#">load next</a>
 {{/if}}
@@ -24,9 +43,8 @@
   </tbody>
 </table>
 
-<h3>Customers: {{customers.length}}/{{customers.totalCount}}</h3>
+{{table-title title="Customers" collection=customers}}
 <a {{action "reload" customers}} href="#">reload</a>
-|
 {{#if customers.hasNextPage}}
   <a {{action "loadNext" customers}} href="#">load next</a>
 {{/if}}

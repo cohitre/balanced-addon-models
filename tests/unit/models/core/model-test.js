@@ -36,7 +36,7 @@ test("#getSerializer", function() {
 
 test("#updateUri", function() {
   var s = this.subject();
-  s.set("href", "/cool-href");
+  s.set("__attributes.href", "/cool-href");
   deepEqual(s.get("updateUri"), "/cool-href");
 });
 
@@ -79,7 +79,7 @@ test("#save (new success)", function() {
           heads: 1
         }
       }]]);
-      deepEqual(s.get("name"), "Jim McSuperCool");
+      deepEqual(s.get("__attributes.name"), "Jim McSuperCool");
     });
 });
 
@@ -103,7 +103,7 @@ test("#save (existing success)", function() {
   };
   s.setProperties({
     isNew: false,
-    href: "/humans/1"
+    "__attributes.href": "/humans/1"
   });
 
   s.save()
@@ -114,7 +114,7 @@ test("#save (existing success)", function() {
           heads: 1
         }
       }]]);
-      deepEqual(s.get("name"), "Jim McSuperCool");
+      deepEqual(s.get("__attributes.name"), "Jim McSuperCool");
     });
 });
 

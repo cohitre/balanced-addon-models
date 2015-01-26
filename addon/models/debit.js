@@ -6,7 +6,13 @@ var Debit = Transaction.extend({
       presence: true,
       numericality: {
         onlyInteger: true,
-        greaterThanOrEqualTo: 0
+        greaterThan: 0
+      }
+    },
+    amountDollars: {
+      presence: true,
+      numericality: {
+        greaterThan: 0
       }
     },
   },

@@ -3,9 +3,9 @@ import BK from "./core/method-generators";
 
 var ApiKey = Model.extend({
   createUri: "/api_keys",
+  secret: BK.attr("secret"),
 
-  updatedAt: BK.computed.parseDate("updated_at").readOnly(),
-  createdAt: BK.computed.parseDate("created_at").readOnly(),
+  meta: BK.attr("meta"),
 });
 
 ApiKey.reopenClass({

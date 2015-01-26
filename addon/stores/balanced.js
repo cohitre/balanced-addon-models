@@ -65,6 +65,10 @@ var Store = Ember.Object.extend({
     return model;
   },
 
+  getApiKeys: function() {
+    return this.fetchCollection("api_key", "/api_keys");
+  },
+
   getMarketplace: function() {
     return this.fetchItem("marketplace", "/marketplaces");
   },
