@@ -76,6 +76,14 @@ var MethodGenerators = {
     });
   },
 
+  attrBoolean: function(fieldName) {
+    var name = "__attributes." + fieldName;
+    return Ember.computed(name, function() {
+      var v = this.get(name);
+      return Ember.isBlank(v) ? null : v;
+    });
+  },
+
   computed: {
     readOnly: function(fieldName) {
       return Ember.computed.reads(fieldName).readOnly();

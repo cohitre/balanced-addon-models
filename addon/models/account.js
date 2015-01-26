@@ -3,8 +3,18 @@ import Model from "./core/model";
 import BK from "./core/method-generators";
 
 var Account = Model.extend({
-  updatedAt: BK.computed.parseDate("updated_at").readOnly(),
-  createdAt: BK.computed.parseDate("created_at").readOnly(),
+  balance: BK.attrNumber("balance").readOnly(),
+  balanceDollars: BK.attrCentsToDollars("balance").readOnly(),
+  isCreditable: BK.attrBoolean("can_credit").readOnly(),
+  isDebitable: BK.attrBoolean("can_debit").readOnly(),
+
+  currencyType: BK.attr("currency").readOnly(),
+  meta: BK.attr("meta"),
+  type: BK.attr("type").readOnly(),
+
+  getApiProperties: function() {
+    return this.getProperties("meta");
+  },
 });
 
 Account.reopenClass({
