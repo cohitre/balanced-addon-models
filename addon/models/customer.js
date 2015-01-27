@@ -9,8 +9,10 @@ var CUSTOMER_TYPES = {
 
 var Customer = Model.extend({
   name: BK.attr('name'),
+
   dateOfBirthMonth: BK.attr("dob_month"),
   dateOfBirthYear: BK.attr("dob_year"),
+  dateOfBirth: BK.attrYearMonthFields("dateOfBirthYear", "dateOfBirthMonth"),
 
   phone: BK.attr("phone"),
   address: BK.attr("address"),

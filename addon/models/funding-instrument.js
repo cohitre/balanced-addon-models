@@ -5,6 +5,17 @@ import BK from "./core/method-generators";
 var FundingInstrument = Model.extend({
   fetchCustomer: BK.fetchSingle('customer'),
 
+  address: BK.attr("address"),
+  canCredit: BK.attrBoolean("can_credit").readOnly(),
+  canDebit: BK.attrBoolean("can_debit").readOnly(),
+  meta: BK.attr("meta"),
+  numberLastFour: Ember.computed("number", function() {
+    var value = this.get("number");
+    return Ember.typeOf(value) === "string" ?
+      value.substr(value.length - 4, 4) :
+      null;
+  }).readOnly(),
+
   isBankAccount: false,
   isCard: false,
 

@@ -142,7 +142,8 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
 Model.reopenClass({
   serializerName: "balanced-addon-models@serializer:rev1",
   adapterName: "balanced-addon-models@adapter:balanced-api",
-  collectionName: "balanced-addon-models@collection:base"
+  collectionName: "balanced-addon-models@collection:base",
+  queryHandlerName: "balanced-addon-models@query-handler:base"
 });
 
 export default Model;

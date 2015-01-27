@@ -1,6 +1,12 @@
 import Ember from "ember";
 
 var ModelHelpers = {
+  shouldBe: function(attributeName, expectedValue) {
+    return function() {
+      var s = this.subject();
+      deepEqual(s.get(attributeName), expectedValue);
+    };
+  },
   shouldRead: function(readerName, attributeName) {
     return function() {
       var s = this.subject();

@@ -42,6 +42,7 @@ test("ingestJsonItem", function() {
     "createdAt": new Date("2014-12-12T23:54:07.580383Z"),
     "dateOfBirthMonth": 1,
     "dateOfBirthYear": 2014,
+    "dateOfBirth": new Date("2014-01-31T23:59:59.99999Z"),
     "id": "CUxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     "phone": null,
     "href": "/customers/CUxxxxxxxxxxxxxxxxxxxxxxxxxxxx",

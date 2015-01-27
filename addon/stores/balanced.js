@@ -35,6 +35,10 @@ var Store = Ember.Object.extend({
     });
   },
 
+  queryHandlerFor: function(typeName) {
+    return buildRelatedInstance(this, typeName, "queryHandler");
+  },
+
   serializerFor: function(typeName) {
     return buildRelatedInstance(this, typeName, "serializerName");
   },
@@ -106,8 +110,9 @@ var Store = Ember.Object.extend({
     var self = this;
     var adapter = this.adapterFor(typeName);
     var serializer = this.serializerFor(typeName);
+    var queryHandler = this.queryHandlerFor(typeName);
 
-    return adapter.fetch(QueryStringCreator.uri(uri, attributes))
+    return adapter.fetch(queryHandler.uri(uri, attributes))
       .then(function(response) {
         return serializer.extractCollection(response);
       })

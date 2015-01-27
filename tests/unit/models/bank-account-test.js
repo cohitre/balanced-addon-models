@@ -7,30 +7,52 @@ moduleFor("balanced-addon-models@model:bank-account", "model - BankAccount");
 test("#adapter", MH.shouldUseBalancedApiAdapter());
 test("#serializer", MH.shouldUseBalancedApiSerializer());
 
-test("#isBankAccount", function() {
-  deepEqual(this.subject().get("isBankAccount"), true);
-});
+test("#isBankAccount", MH.shouldBe("isBankAccount", true));
+test("#isCard", MH.shouldBe("isCard", false));
 
-test("#isCard", function() {
-  deepEqual(this.subject().get("isCard"), false);
-});
-
-test("#lastFour", function() {
+test("properties", function() {
   var s = this.subject();
-  deepEqual(s.get("lastFour"), null);
-  s.set("account_number", "xxxxxxxxx12345");
-  deepEqual(s.get("lastFour"), "2345");
+  s.ingestJsonItem({
+    "routing_number": "012345678",
+    "bank_name": "Fancy Bank Inc.",
+    "account_type": "checking",
+    "name": "Cool Customer",
+    "can_credit": true,
+    "can_debit": true,
+    "meta": {},
+    "account_number": "xx8888",
+    "address": {
+      "city": null,
+    }
+  });
+
+  MH.shouldMatch(s, {
+    routingNumber: "012345678",
+    bankName: "Fancy Bank Inc.",
+    accountType: "checking",
+    isChecking: true,
+    isSavings: false,
+    name: "Cool Customer",
+    canCredit: true,
+    canDebit: true,
+    meta: {},
+    number: "xx8888",
+    numberLastFour: "8888",
+    address: {
+      city: null,
+    }
+  });
 });
 
 test("#getApiProperties", function() {
   var s = this.subject();
 
+  s.set("__attributes.account_number", "123456789");
+  s.set("__attributes.name", "King K. Rool");
   s.setProperties({
-    account_number: "123456789",
-    account_type: "checking",
-    name: "King K. Rool",
-    routing_number: "12345",
-    address: {}
+    accountType: "checking",
+    routingNumber: "12345",
+    address: {},
   });
 
   deepEqual(s.getApiProperties(), {
@@ -40,12 +62,4 @@ test("#getApiProperties", function() {
     routing_number: "12345",
     address: {}
   });
-
-});
-
-test("#getBalancedJsModel", function() {
-  var old = window.balanced.bankAccount;
-  window.balanced.bankAccount = "cool";
-  deepEqual(this.subject().getBalancedJsModel(), "cool");
-  window.balanced.bankAccount = old;
 });

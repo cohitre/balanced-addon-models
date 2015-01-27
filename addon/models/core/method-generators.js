@@ -33,7 +33,13 @@ var MethodGenerators = {
 
   attr: function(fieldName) {
     var name = "__attributes." + fieldName;
-    return Ember.computed.alias(name);
+    return Ember.computed(name, function(attrName, value) {
+      if (arguments.length > 1) {
+        this.set(name, Ember.isBlank(value) ? null : value);
+      }
+      var v = this.get(name);
+      return Ember.isBlank(v) ? null : v;
+    });
   },
 
   attrCentsToDollars: function(fieldName) {
@@ -44,6 +50,37 @@ var MethodGenerators = {
       }
       var v = this.get(name);
       return Ember.isBlank(v) ? null : (v/100);
+    });
+  },
+
+  attrYearMonthFields: function(yearName, monthName) {
+    var DATE_FORMAT = /^[\s]*(\d?\d)[\s]*[-\/][\s]*(\d\d\d\d)[\s]*$/;
+
+    var setFields = function(subject, year, month) {
+      var attributes = {};
+      attributes[yearName] = year;
+      attributes[monthName] = month;
+      subject.setProperties(attributes);
+    };
+
+    return Ember.computed(yearName, monthName, function(attrName, value) {
+      if (arguments.length > 1) {
+        if (Ember.typeOf(value) === "string" && value.match(DATE_FORMAT)) {
+          var match = value.match(DATE_FORMAT);
+          setFields(this, parseInt(match[2], 10), parseInt(match[1], 10));
+        }
+        else {
+          setFields(this, null, null);
+        }
+      }
+      // Javascript months are 0 indexed  (0 === January)
+      // Credit card months are 1 indexed (1 === January)
+      // if month = 10 and year = 2020
+      // new Date(year, month, 1) is November 1, 2020.
+      var month = this.get(monthName);
+      var year = this.get(yearName);
+      var beginningOfMonth = Date.UTC(year, month, 1);
+      return new Date(beginningOfMonth - 1);
     });
   },
 
