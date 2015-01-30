@@ -3,15 +3,16 @@ import Model from "./core/model";
 import BK from "./core/method-generators";
 
 var BankAccountVerification = Model.extend({
-  meta: BK.attr("meta"),
-
-  isVerified: isStatus("verified"),
-  isFailed: isStatus("failed"),
-  isPending: isStatus("pending"),
-  isSuccess: isStatus("deposit_succeeded"),
-
+  verificationStatus: BK.attr("verification_status").readOnly(),
+  depositStatus: BK.attr("deposit_status").readOnly(),
   attemptsRemaining: Ember.computed.reads("__attributes.attempts_remaining").readOnly(),
   isVerifiable: Ember.computed.gt("attemptsRemaining", 0).readOnly(),
+
+  isVerified: Ember.computed.equal("verificationStatus", "verified"),
+  isFailed: Ember.computed.equal("verificationStatus", "failed"),
+  isPending: Ember.computed.equal("verificationStatus", "pending"),
+
+  isDepositSuccess: Ember.computed.equal("depositStatus", "succeeded"),
 
   verify: function(amount1, amount2) {
     return this.updateProperties({
@@ -22,12 +23,8 @@ var BankAccountVerification = Model.extend({
 });
 
 BankAccountVerification.reopenClass({
+  API_PROPERTIES: ["meta", "amount_1", "amount_2"],
   adapterName: "balanced-addon-models@adapter:balanced-api"
 });
-
-function isStatus(value) {
-  var attrName = "__attributes.verification_status";
-  return Ember.computed.equal(attrName, value).readOnly();
-}
 
 export default BankAccountVerification;

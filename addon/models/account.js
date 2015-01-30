@@ -9,16 +9,11 @@ var Account = Model.extend({
   isDebitable: BK.attrBoolean("can_debit").readOnly(),
 
   currencyType: BK.attr("currency").readOnly(),
-  meta: BK.attr("meta"),
   type: BK.attr("type").readOnly(),
-
-  getApiProperties: function() {
-    return this.getProperties("meta");
-  },
 });
 
 Account.reopenClass({
-  adapterName: "balanced-addon-models@adapter:balanced-api",
+  API_PROPERTIES: ["meta"],
 });
 
 export default Account;

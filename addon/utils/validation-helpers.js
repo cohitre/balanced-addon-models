@@ -6,6 +6,7 @@ var PHONE_NUMBER_INVALID_CHARACTERS = /[^\d- () +]/g;
 
 var ValidationHelpers = {
   VALID_DATE_FORMAT: VALID_DATE_FORMAT,
+  INVALID_APPEARS_ON_STATEMENT_AS_CHARACTERS: INVALID_APPEARS_ON_STATEMENT_AS_CHARACTERS,
 
   validateAppearsOnStatementAsFormat: function(string) {
     var match = (string||"").match(INVALID_APPEARS_ON_STATEMENT_AS_CHARACTERS);

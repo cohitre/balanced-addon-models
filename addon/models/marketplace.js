@@ -11,23 +11,23 @@ var Marketplace = Model.extend({
     },
     domainUrl: {
       presence: {
-        "unless": "isTest"
+        "if": "isProduction"
       },
     },
     supportEmailAddress: {
       presence: {
-        "unless": "isTest"
+        "if": "isProduction"
       },
     },
     supportPhoneNumber: {
       presence: {
-        "unless": "isTest"
+        "if": "isProduction"
       },
       length: {
         maximum: 15
       },
       inline: EmberValidations.validator(function() {
-        if (!this.get("isTest")) {
+        if (this.get("isProduction")) {
           return VH.validatePhoneFormat(this.get("supportPhoneNumber"));
         }
       })
@@ -69,18 +69,10 @@ var Marketplace = Model.extend({
   createdAt: BK.attrStringToDate("created_at").readOnly(),
   updatedAt: BK.attrStringToDate("updated_at").readOnly(),
   isProduction: BK.attr("production").readOnly(),
+  isTest: Ember.computed.not("isProduction").readOnly(),
 
   escrowDollars: BK.attrCentsToDollars("in_escrow").readOnly(),
   unsettledFeesDollars: BK.attrCentsToDollars("unsettled_fees").readOnly(),
-
-  getApiProperties: function() {
-    return {
-      name: this.get("name"),
-      domain_url: this.get("domainUrl"),
-      support_email_address: this.get("supportEmailAddress"),
-      support_phone_number: this.get("supportPhoneNumber"),
-    };
-  },
 
   getDebuggingProperties: function() {
     return Ember.merge(this.getApiProperties(), {
@@ -90,6 +82,7 @@ var Marketplace = Model.extend({
 });
 
 Marketplace.reopenClass({
+  API_PROPERTIES: ["name", "domain_url", "support_email_address", "support_phone_number", "meta"],
   adapterName: "balanced-addon-models@adapter:balanced-api"
 });
 

@@ -6,6 +6,7 @@ import BK from "./method-generators";
 var Model = Ember.Object.extend(EmberValidations.Mixin, {
   id: Ember.computed.reads("__attributes.id").readOnly(),
 
+  meta: BK.attr("meta"),
   href: BK.attr("href").readOnly(),
   updateUri: Ember.computed.reads("href").readOnly(),
   deleteUri: Ember.computed.reads("href").readOnly(),
@@ -109,7 +110,12 @@ var Model = Ember.Object.extend(EmberValidations.Mixin, {
   },
 
   getApiProperties: function() {
-    Ember.assert("core/model#getApiProperties method is not implemented in object "+ this, false);
+    var propertyNames = this.constructor.API_PROPERTIES;
+
+    Ember.assert("Object " + this + "does not override #getApiProperties or implement API_PROPERTIES.", !Ember.isBlank(propertyNames));
+
+    var attributes = this.get("__attributes");
+    return attributes.getProperties.apply(attributes, propertyNames);
   },
 
   delete: function() {

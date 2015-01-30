@@ -3,7 +3,9 @@ import FundingInstrument from "./funding-instrument";
 import BK from "./core/method-generators";
 
 var BankAccount = FundingInstrument.extend({
-  isBankAccount: true,
+  isBankAccount: Ember.computed(function() {
+    return true;
+  }).readOnly(),
 
   name: BK.attr("name"),
   routingNumber: BK.attr("routing_number"),
@@ -17,25 +19,13 @@ var BankAccount = FundingInstrument.extend({
 
   number: BK.attr("account_number"),
 
-
-  getApiProperties: function() {
-    var self = this;
-    var properties = {};
-    var g = function(key, value) {
-      properties[key] = self.get(value);
-    };
-
-    g("account_number", "number");
-    g("account_type", "accountType");
-    g("name", "name");
-    g("routing_number", "routingNumber");
-    g("address", "address");
-    return properties;
-  },
-
   getBalancedJsModel: function() {
     return window.balanced.bankAccount;
   },
+});
+
+BankAccount.reopenClass({
+  API_PROPERTIES: ["account_number", "account_type", "name", "routing_number", "account_type", "address", "meta"],
 });
 
 export default BankAccount;

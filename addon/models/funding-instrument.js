@@ -16,8 +16,12 @@ var FundingInstrument = Model.extend({
       null;
   }).readOnly(),
 
-  isBankAccount: false,
-  isCard: false,
+  isBankAccount: Ember.computed(function() {
+    return false;
+  }).readOnly(),
+  isCard: Ember.computed(function() {
+    return false;
+  }).readOnly(),
 
   linkToCustomer: function(customer) {
     var self = this;

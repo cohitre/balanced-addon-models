@@ -49,6 +49,7 @@ test("#getApiProperties", function() {
 
   s.set("__attributes.account_number", "123456789");
   s.set("__attributes.name", "King K. Rool");
+  s.set("__attributes.meta", {});
   s.setProperties({
     accountType: "checking",
     routingNumber: "12345",
@@ -56,6 +57,7 @@ test("#getApiProperties", function() {
   });
 
   deepEqual(s.getApiProperties(), {
+    meta: {},
     account_number: "123456789",
     account_type: "checking",
     name: "King K. Rool",

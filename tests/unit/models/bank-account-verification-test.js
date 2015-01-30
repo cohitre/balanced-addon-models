@@ -8,7 +8,7 @@ test("#serializer", MH.shouldUseBalancedApiSerializer());
 
 test("#isVerified", stateTest("isVerified", "verified"));
 test("#isFailed", stateTest("isFailed", "failed"));
-test("#isSuccess", stateTest("isSuccess", "deposit_succeeded"));
+test("#isDepositSuccess", depositStateTest("isDepositSuccess", "succeeded"));
 test("#isPending", stateTest("isPending", "pending"));
 
 test("#isVerifiable", function() {
@@ -42,7 +42,7 @@ test("properties", function() {
     isVerified: false,
     isFailed: false,
     isPending: true,
-    isSuccess: false,
+    isDepositSuccess: true,
     attemptsRemaining: 3,
     isVerifiable: true
   });
@@ -53,6 +53,15 @@ function stateTest(stateName, stateValue) {
     var subject = this.subject();
     deepEqual(subject.get(stateName), false);
     subject.set("__attributes.verification_status", stateValue);
+    deepEqual(subject.get(stateName), true);
+  };
+}
+
+function depositStateTest(stateName, stateValue) {
+  return function() {
+    var subject = this.subject();
+    deepEqual(subject.get(stateName), false);
+    subject.set("__attributes.deposit_status", stateValue);
     deepEqual(subject.get(stateName), true);
   };
 }

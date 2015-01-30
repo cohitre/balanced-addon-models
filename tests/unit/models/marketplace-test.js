@@ -59,6 +59,7 @@ test("ingestJsonItem", function() {
     "supportEmailAddress": "support@example.com",
     "supportPhoneNumber": "+3331231122",
     "isProduction": false,
+    "isTest": true,
     "meta": {},
     "unsettledFeesDollars": 0.10,
   });
@@ -79,13 +80,14 @@ test("#domainUrl validations", function() {
     s.set("domainUrl", val);
     deepEqual(s.get("errors.domainUrl"), expectation);
   };
-  s.set("isTest", true);
+  setTestValue(s, true);
   t("xxxxxxx", []);
   t("", []);
   t(null, []);
 
-  s.set("isTest", false);
+  setTestValue(s, false);
   t("", ["can't be blank"]);
+  t(null, ["can't be blank"]);
   t("ccc", []);
 });
 
@@ -95,12 +97,12 @@ test("#supportEmailAddress validations", function() {
     s.set("supportEmailAddress", val);
     deepEqual(s.get("errors.supportEmailAddress"), expectation);
   };
-  s.set("isTest", true);
+  setTestValue(s, true);
   t("xxxxxxx", []);
   t("", []);
   t(null, []);
 
-  s.set("isTest", false);
+  setTestValue(s, false);
   t("", ["can't be blank"]);
   t("ccc", []);
 });
@@ -111,12 +113,12 @@ test("#supportPhoneNumber validations", function() {
     s.set("supportPhoneNumber", val);
     deepEqual(s.get("errors.supportPhoneNumber"), expectation);
   };
-  s.set("isTest", true);
+  setTestValue(s, true);
   t("xxxxxxx", []);
   t("", []);
   t(null, []);
 
-  s.set("isTest", false);
+  setTestValue(s, false);
   t("", ["can't be blank"]);
   t("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", [
     "is too long (maximum is 15 characters)",
@@ -125,3 +127,6 @@ test("#supportPhoneNumber validations", function() {
   t("778 999 33333", []);
 });
 
+function setTestValue(s, value) {
+  s.set("__attributes.production", !value);
+}

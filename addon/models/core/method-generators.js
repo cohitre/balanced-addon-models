@@ -35,10 +35,10 @@ var MethodGenerators = {
     var name = "__attributes." + fieldName;
     return Ember.computed(name, function(attrName, value) {
       if (arguments.length > 1) {
-        this.set(name, Ember.isBlank(value) ? null : value);
+        this.set(name, Ember.isNone(value) ? null : value);
       }
       var v = this.get(name);
-      return Ember.isBlank(v) ? null : v;
+      return Ember.isNone(v) ? null : v;
     });
   },
 
